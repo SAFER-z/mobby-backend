@@ -14,3 +14,5 @@ spring:
         format_sql: false
         show_sql: false
     open-in-view: false
+
+appKey: ${TMAP_APP_KEY}
