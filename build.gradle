@@ -29,6 +29,9 @@ dependencies {
 	implementation 'org.hibernate:hibernate-spatial:6.1.7.Final'
 	implementation 'org.postgresql:postgresql'
 
+	//batch
+	implementation 'com.opencsv:opencsv:5.7.1'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
