@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.safer.safer.config.batch.tasklet.Constant.UTF_8;
+
 @Component
 @RequiredArgsConstructor
 public class StationTasklet implements Tasklet {
@@ -24,13 +26,13 @@ public class StationTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String filePath = new ClassPathResource("data/station.csv").getURI().getPath();
-        List<StationDto> items = CsvUtil.readCsv(filePath, StationDto.class);
+        List<StationDto> items = CsvUtil.readCsv(filePath, UTF_8, StationDto.class);
 
         List<Station> stations = items.stream()
                 .map(StationDto::toEntity)
                 .collect(Collectors.toList());
-        stationRepository.saveAll(stations);
 
+        stationRepository.saveAll(stations);
         return RepeatStatus.FINISHED;
     }
 }

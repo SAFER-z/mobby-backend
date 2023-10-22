@@ -3,6 +3,7 @@ package com.safer.safer.config.batch.tasklet;
 import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.config.batch.dto.ToiletDto;
 import com.safer.safer.domain.Facility;
+import com.safer.safer.domain.util.GeometryUtil;
 import com.safer.safer.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.safer.safer.config.batch.tasklet.Constant.EUC_KR;
+
 @Component
 @RequiredArgsConstructor
 public class ToiletTasklet implements Tasklet {
@@ -24,13 +27,13 @@ public class ToiletTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String filePath = new ClassPathResource("data/toilet.csv").getURI().getPath();
-        List<ToiletDto> items = CsvUtil.readCsv(filePath, ToiletDto.class);
+        List<ToiletDto> items = CsvUtil.readCsv(filePath, EUC_KR, ToiletDto.class);
 
         List<Facility> toilets = items.stream()
                 .map(ToiletDto::toEntity)
                 .collect(Collectors.toList());
-        facilityRepository.saveAll(toilets);
 
+        facilityRepository.saveAll(toilets);
         return RepeatStatus.FINISHED;
     }
 }

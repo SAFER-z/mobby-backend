@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.safer.safer.config.batch.tasklet.Constant.EUC_KR;
+
 @Component
 @RequiredArgsConstructor
 public class DisabledFacilityTasklet implements Tasklet {
@@ -24,13 +26,13 @@ public class DisabledFacilityTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String filePath = new ClassPathResource("data/disabled_facility_mapo_gu.csv").getURI().getPath();
-        List<DisabledFacilityDto> items = CsvUtil.readCsv(filePath, DisabledFacilityDto.class);
+        List<DisabledFacilityDto> items = CsvUtil.readCsv(filePath, EUC_KR, DisabledFacilityDto.class);
 
         List<Facility> disabledFacilities = items.stream()
                 .map(DisabledFacilityDto::toEntity)
                 .collect(Collectors.toList());
-        facilityRepository.saveAll(disabledFacilities);
 
+        facilityRepository.saveAll(disabledFacilities);
         return RepeatStatus.FINISHED;
     }
 }

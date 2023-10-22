@@ -25,12 +25,12 @@ public class DisabledFacilityDto {
         return Facility.of(
                 name,
                 FacilityType.from(type),
+                TMapUtil.findPointByAddress(address),
                 address,
                 String.join(";",
                         "시설운영주체:"+operator,
                         "전화번호:"+phoneNumber,
-                        "비고:"+etc),
-                TMapUtil.findPointByAddress(address)
+                        "비고:"+etc)
         );
     }
 }

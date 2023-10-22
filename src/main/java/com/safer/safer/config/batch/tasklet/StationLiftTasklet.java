@@ -17,11 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static com.safer.safer.config.batch.tasklet.Constant.PARENTHESIS_REGEX;
-import static com.safer.safer.config.batch.tasklet.Constant.REMOVAL_REGEX;
+import static com.safer.safer.config.batch.tasklet.Constant.EUC_KR;
 import static com.safer.safer.exception.ExceptionCode.NO_SUCH_STATION;
 
 @Component
@@ -34,12 +31,14 @@ public class StationLiftTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String filePath = new ClassPathResource("data/station_lift.csv").getURI().getPath();
-        List<StationLiftDto> items = CsvUtil.readCsv(filePath, StationLiftDto.class);
+        List<StationLiftDto> items = CsvUtil.readCsv(filePath, EUC_KR, StationLiftDto.class);
         List<Facility> lifts = new ArrayList<>();
 
         items.forEach(lift -> {
-            String stationName = lift.getStationName().replaceAll(REMOVAL_REGEX, "");
-            Station station = stationRepository.findByNameAndLine(stationName, lift.getLine())
+            String stationName = CsvUtil.parseStationName(lift.getStationName());
+            String line = CsvUtil.parseLine(lift.getLine());
+
+            Station station = stationRepository.findByNameAndLine(stationName, line)
                     .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName));
 
             lifts.add(lift.toEntity(station));

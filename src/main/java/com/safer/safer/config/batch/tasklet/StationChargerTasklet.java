@@ -1,5 +1,6 @@
 package com.safer.safer.config.batch.tasklet;
 
+import com.safer.safer.config.batch.dto.KorailChargerDto;
 import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.config.batch.dto.StationChargerDto;
 import com.safer.safer.domain.Facility;
@@ -17,8 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.safer.safer.exception.ExceptionCode.NO_SUCH_STATION;
 import static com.safer.safer.config.batch.tasklet.Constant.*;
@@ -35,23 +34,27 @@ public class StationChargerTasklet implements Tasklet {
         String filePath = new ClassPathResource("data/station_charger.csv").getURI().getPath();
         String korailFilePath = new ClassPathResource("data/korail_charger.csv").getURI().getPath();
 
-        List<StationChargerDto> items = CsvUtil.readCsv(filePath, StationChargerDto.class);
-        List<StationChargerDto> korailItems = CsvUtil.readCsv(korailFilePath, StationChargerDto.class);
+        List<StationChargerDto> items = CsvUtil.readCsv(filePath, EUC_KR, StationChargerDto.class);
+        List<KorailChargerDto> korailItems = CsvUtil.readCsv(korailFilePath, EUC_KR, KorailChargerDto.class);
         List<Facility> chargers = new ArrayList<>();
 
         items.forEach(charger -> {
-            String stationName = charger.getStationName().replaceAll(REMOVAL_REGEX, "");
+            String stationName = CsvUtil.parseStationName(charger.getStationName());
+            String line = CsvUtil.parseLine(charger.getLine());
 
-            Station station = stationRepository.findByNameAndLine(stationName, charger.getLine())
+            Station station = stationRepository.findByNameAndLine(stationName, line)
                     .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName));
+
             chargers.add(charger.toEntity(station));
         });
 
         korailItems.forEach(charger -> {
-            String stationName = charger.getStationName().replaceAll(REMOVAL_REGEX, "");
+            String stationName = CsvUtil.parseStationName(charger.getStationName());
+            String line = CsvUtil.parseLine(charger.getLine());
 
-            Station station = stationRepository.findByNameAndOperator(stationName, KORAIL)
+            Station station = stationRepository.findByNameAndLine(stationName, line)
                     .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName));
+
             chargers.add(charger.toEntity(station));
         });
 

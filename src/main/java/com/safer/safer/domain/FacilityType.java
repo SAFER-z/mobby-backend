@@ -28,7 +28,7 @@ public enum FacilityType {
 
     public static FacilityType from(String type) {
         return Arrays.stream(values())
-                .filter(facilityType -> facilityType.name().equals(type))
+                .filter(facilityType -> facilityType.getName().equals(type))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_FACILITY_TYPE, type));
     }

@@ -35,7 +35,8 @@ public class Facility {
     @Setter
     private String imageUrl;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn
     private Station station;
 
     private Facility(String name, FacilityType type, Point coordinate, String address, String detailLocation, String additional) {
@@ -55,8 +56,8 @@ public class Facility {
         return new Facility(name, type, coordinate, null, detailLocation, null);
     }
 
-    public static Facility of(String name, FacilityType type, String address, String detailLocation, Point coordinate) {
-        return new Facility(name, type, coordinate, address, detailLocation, null);
+    public static Facility of(String name, FacilityType type, String detailLocation, String additional, Point coordinate) {
+        return new Facility(name, type, coordinate, null, detailLocation, additional);
     }
 
     public static Facility of(String name, FacilityType type, Point coordinate, String address, String additional) {

@@ -38,7 +38,7 @@ public class ChargerDto {
                 name,
                 FacilityType.CHARGER,
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
-                roadAddress.isEmpty() ? streetAddress : roadAddress,
+                roadAddress.isBlank() ? streetAddress : roadAddress,
                 detailLocation,
                 String.join(";",
                         "시설운영주체:"+operator,

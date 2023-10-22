@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.domain.Facility;
 import com.safer.safer.domain.FacilityType;
 import com.safer.safer.domain.Station;
+import com.safer.safer.domain.util.CsvUtil;
 import lombok.Getter;
 
 @Getter
@@ -22,13 +23,14 @@ public class StationElevatorDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                String.join(" ", station.getName(), FacilityType.ELEVATOR.getName()),
+                CsvUtil.generateNameByStation(station, FacilityType.ELEVATOR),
                 FacilityType.ELEVATOR,
-                station.getCoordinate(),
                 detailLocation,
                 String.join(";",
                         "호기:"+number.replaceAll("#", " "),
-                        "운행구간:"+operatingRoute)
+                        "운행구간:"+operatingRoute
+                ),
+                station.getCoordinate()
         );
     }
 }

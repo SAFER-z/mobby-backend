@@ -17,7 +17,7 @@ public class ToiletDto {
 
     public Facility toEntity() {
         return Facility.of(
-                detailName.isEmpty() ? name : name.concat(" "+detailName),
+                detailName.isBlank() ? name : name.concat(" "+detailName),
                 FacilityType.TOILET,
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude))
         );

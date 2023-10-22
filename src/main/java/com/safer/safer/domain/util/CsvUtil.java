@@ -32,4 +32,30 @@ public class CsvUtil {
             throw new FileIOException(FAIL_TO_READ_FILE);
         }
     }
+
+    public static String parseStationName(String stationName) {
+        stationName = stationName.replaceAll(REMOVAL_REGEX, "").trim();
+        if(!stationName.endsWith(STATION))
+            stationName = stationName.concat(STATION);
+
+        return stationName;
+    }
+
+    public static String generateNameByStation(Station station, FacilityType type) {
+        return String.join(" ", station.getName(), type.getName());
+    }
+
+    public static String generateNameByStation(Station station, String number, FacilityType type) {
+        return String.join(" ", station.getName(), number.concat("번"), type.getName());
+    }
+
+    public static String parseLine(String line) {
+        if(line.matches(NUMBER_REGEX) && !line.endsWith(NUMBER_LINE)) {
+            line = line.concat(NUMBER_LINE);
+        }
+        if(!line.endsWith(LINE))
+            line = line.concat(LINE);
+
+        return line;
+    }
 }

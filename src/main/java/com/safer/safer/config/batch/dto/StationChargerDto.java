@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.domain.Facility;
 import com.safer.safer.domain.FacilityType;
 import com.safer.safer.domain.Station;
+import com.safer.safer.domain.util.CsvUtil;
 import lombok.Getter;
 
 @Getter
@@ -17,7 +18,7 @@ public class StationChargerDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                String.join(" ", station.getName(), FacilityType.CHARGER.getName()),
+                CsvUtil.generateNameByStation(station, FacilityType.CHARGER),
                 FacilityType.CHARGER,
                 station.getCoordinate(),
                 detailLocation

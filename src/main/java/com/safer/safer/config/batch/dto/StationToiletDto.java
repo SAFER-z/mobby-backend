@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.domain.Facility;
 import com.safer.safer.domain.FacilityType;
 import com.safer.safer.domain.Station;
+import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.domain.util.GeometryUtil;
 import lombok.Getter;
 
@@ -28,14 +29,15 @@ public class StationToiletDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-            String.join(" ", station.getName(), FacilityType.DISABLED_TOILET.getName()),
-            FacilityType.DISABLED_TOILET,
-            GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
-            detailLocation,
-            String.join(";",
-                    "개방시간:"+openTime,
-                    "전화번호:"+phoneNumber,
-                    "개찰구 내부/외부:"+gate)
+                CsvUtil.generateNameByStation(station, FacilityType.DISABLED_TOILET),
+                FacilityType.DISABLED_TOILET,
+                detailLocation,
+                String.join(";",
+                        "개방시간:"+openTime,
+                        "전화번호:"+phoneNumber,
+                        "개찰구 내부/외부:"+gate
+                ),
+                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude))
         );
     }
 }
