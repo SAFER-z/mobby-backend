@@ -1,4 +1,4 @@
-package com.safer.safer.entity;
+package com.safer.safer.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
