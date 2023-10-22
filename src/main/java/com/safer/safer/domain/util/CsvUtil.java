@@ -3,16 +3,21 @@ package com.safer.safer.domain.util;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.safer.safer.domain.FacilityType;
+import com.safer.safer.domain.Station;
 import com.safer.safer.exception.FileIOException;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.List;
 
+import static com.safer.safer.config.batch.tasklet.Constant.*;
 import static com.safer.safer.exception.ExceptionCode.*;
 
 public class CsvUtil {
-    public static <T> List<T> readCsv(String filePath, Class<T> clazz) throws Exception {
-        try (CSVReader reader = new CSVReaderBuilder(new FileReader(filePath))
+    public static <T> List<T> readCsv(String filePath, Charset encoding, Class<T> clazz) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), encoding));
+        try (CSVReader reader = new CSVReaderBuilder(br)
                 .withSkipLines(1)
                 .build()) {
 
