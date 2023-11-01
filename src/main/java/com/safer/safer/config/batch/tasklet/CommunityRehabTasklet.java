@@ -1,8 +1,8 @@
 package com.safer.safer.config.batch.tasklet;
 
-import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.config.batch.dto.DisabledFacilityDto;
 import com.safer.safer.domain.Facility;
+import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -19,18 +19,18 @@ import static com.safer.safer.config.batch.tasklet.Constant.EUC_KR;
 
 @Component
 @RequiredArgsConstructor
-public class DisabledFacilityTasklet implements Tasklet {
+public class CommunityRehabTasklet implements Tasklet {
 
     private final FacilityRepository facilityRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String filePath = new ClassPathResource("data/disabled_facility_mapo_gu.csv").getURI().getPath();
+        String filePath = new ClassPathResource("data/community_rehabilitation.csv").getURI().getPath();
         List<DisabledFacilityDto> items = CsvUtil.readCsv(filePath, EUC_KR, DisabledFacilityDto.class);
 
         List<Facility> disabledFacilities = items.stream()
                 .map(DisabledFacilityDto::toEntity)
-                .collect(Collectors.toList());
+                .toList();
 
         facilityRepository.saveAll(disabledFacilities);
         return RepeatStatus.FINISHED;
