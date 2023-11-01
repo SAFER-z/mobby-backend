@@ -20,10 +20,11 @@ public class StationRampDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, number, FacilityType.RAMP),
-                FacilityType.RAMP,
+                CsvUtil.generateNameByStation(station, number, FacilityType.ACCESSIBLE_RAMP),
+                FacilityType.ACCESSIBLE_RAMP,
                 station.getCoordinate(),
-                detailLocation
+                detailLocation,
+                station
         );
     }
 }

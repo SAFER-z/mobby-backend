@@ -18,10 +18,11 @@ public class StationChargerDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.CHARGER),
-                FacilityType.CHARGER,
+                CsvUtil.generateNameByStation(station, FacilityType.WHEELCHAIR_CHARGER),
+                FacilityType.WHEELCHAIR_CHARGER,
                 station.getCoordinate(),
-                detailLocation
+                detailLocation,
+                station
         );
     }
 }
