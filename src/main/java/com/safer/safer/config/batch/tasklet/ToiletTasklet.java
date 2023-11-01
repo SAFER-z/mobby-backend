@@ -31,7 +31,7 @@ public class ToiletTasklet implements Tasklet {
 
         List<Facility> toilets = items.stream()
                 .map(ToiletDto::toEntity)
-                .collect(Collectors.toList());
+                .toList();
 
         facilityRepository.saveAll(toilets);
         return RepeatStatus.FINISHED;

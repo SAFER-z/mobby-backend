@@ -30,7 +30,7 @@ public class ChargerTasklet implements Tasklet {
 
         List<Facility> chargers = items.stream()
                 .map(ChargerDto::toEntity)
-                .collect(Collectors.toList());
+                .toList();
 
         facilityRepository.saveAll(chargers);
         return RepeatStatus.FINISHED;

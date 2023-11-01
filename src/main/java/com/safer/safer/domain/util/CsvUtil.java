@@ -34,7 +34,7 @@ public class CsvUtil {
     }
 
     public static String parseStationName(String stationName) {
-        stationName = stationName.replaceAll(REMOVAL_REGEX, "").trim();
+        stationName = parseParenthesis(stationName);
         if(!stationName.endsWith(STATION))
             stationName = stationName.concat(STATION);
 
@@ -57,5 +57,20 @@ public class CsvUtil {
             line = line.concat(LINE);
 
         return line;
+    }
+
+    public static String parseParenthesis(String input) {
+        return input.replaceAll(REMOVAL_REGEX, "").trim();
+    }
+
+    public static String parseTime(String input) {
+        if(input.equals("0"))
+            return "00:00";
+        if(input.length() < 4)
+            input = "0"+input;
+
+        String hours = input.substring(0, 2);
+        String minutes = input.substring(2);
+        return hours + ":" + minutes;
     }
 }

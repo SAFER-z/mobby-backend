@@ -24,7 +24,7 @@ public class StationDto {
     private String roadAddress;
 
     public Station toEntity() {
-        Point coordinate = latitude.isBlank() ? TMapUtil.findPointByAddress(roadAddress) :
+        Point coordinate = latitude.isBlank() ? TMapUtil.findPointByKeyword(roadAddress) :
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
 
         return Station.of(

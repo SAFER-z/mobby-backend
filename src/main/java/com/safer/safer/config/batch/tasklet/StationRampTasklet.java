@@ -39,7 +39,7 @@ public class StationRampTasklet implements Tasklet {
             String line = CsvUtil.parseLine(ramp.getLine());
 
             Station station = stationRepository.findByNameAndLine(stationName, line)
-                        .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName+line));
+                    .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName+line));
 
             ramps.add(ramp.toEntity(station));
         });
