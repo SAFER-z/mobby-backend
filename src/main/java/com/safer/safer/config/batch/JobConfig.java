@@ -36,6 +36,7 @@ public class JobConfig {
                 .next(VocationalRehabStep(jobRepository, transactionManager))
                 .next(ChargerStep(jobRepository, transactionManager))
                 .next(ToiletStep(jobRepository, transactionManager))
+                .next(ParkingLotStep(jobRepository, transactionManager))
                 .build();
     }
 
@@ -57,6 +58,13 @@ public class JobConfig {
     public Step ChargerStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("chargerStep", jobRepository)
                 .tasklet(new ChargerTasklet(facilityRepository), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step ParkingLotStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("parkingLotStep", jobRepository)
+                .tasklet(new ParkingLotTasklet(facilityRepository), transactionManager)
                 .build();
     }
 
