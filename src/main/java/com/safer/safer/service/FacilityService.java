@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
+import org.springframework.util.StringUtils;
 
 import static com.safer.safer.exception.ExceptionCode.NO_SUCH_FACILITY;
 
@@ -29,13 +28,12 @@ public class FacilityService {
     public FacilitiesResponse findFacilitiesByDistance(CoordinateRequest coordinate, String category) {
         Point userCoordinate = coordinate.toPoint();
 
-        if(Objects.isNull(category)) {
-            return FacilitiesResponse.of(facilityRepository.findAllByDistance(userCoordinate).stream()
-                    .map(FacilityResponse::from)
-                    .toList());
-        }
+        if(StringUtils.hasText(category))
+            return findFacilitiesByDistanceAndCategory(userCoordinate, category);
 
-        return findFacilitiesByDistanceAndCategory(userCoordinate, category);
+        return FacilitiesResponse.of(facilityRepository.findAllByDistance(userCoordinate).stream()
+                .map(FacilityResponse::from)
+                .toList());
     }
 
     public FacilitiesResponse findFacilitiesByDistanceAndCategory(Point userCoordinate, String category) {
