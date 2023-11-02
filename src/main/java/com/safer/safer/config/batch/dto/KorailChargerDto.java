@@ -20,11 +20,12 @@ public class KorailChargerDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.CHARGER),
-                FacilityType.CHARGER,
+                CsvUtil.generateNameByStation(station, FacilityType.WHEELCHAIR_CHARGER),
+                FacilityType.WHEELCHAIR_CHARGER,
                 detailLocation,
-                "전화번호:"+phoneNumber,
-                station.getCoordinate()
+                phoneNumber.isBlank() ? "" : "전화번호="+phoneNumber,
+                station.getCoordinate(),
+                station
         );
     }
 }

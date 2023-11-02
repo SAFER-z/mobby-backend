@@ -25,9 +25,9 @@ public class TMapUtil {
         appKey = value;
     }
 
-    public static Point findPointByAddress(String address) {
+    public static Point findPointByKeyword(String keyword) {
         RestTemplate restTemplate = new RestTemplate();
-        URI uri = createUri(address);
+        URI uri = createUri(keyword);
 
         RequestEntity<Void> request = RequestEntity
                 .get(uri)
@@ -37,7 +37,7 @@ public class TMapUtil {
         ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
         if(!response.getStatusCode().equals(HttpStatus.OK))
-            throw new TMapException(FAIL_TO_REQUEST_TMAP_API);
+            throw new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode().toString() + " 검색어:"+keyword);
 
         return getCoordinate(response);
     }

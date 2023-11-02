@@ -29,15 +29,16 @@ public class StationToiletDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.DISABLED_TOILET),
-                FacilityType.DISABLED_TOILET,
+                CsvUtil.generateNameByStation(station, FacilityType.ACCESSIBLE_TOILET),
+                FacilityType.ACCESSIBLE_TOILET,
                 detailLocation,
                 String.join(";",
-                        "개방시간:"+openTime,
-                        "전화번호:"+phoneNumber,
-                        "개찰구 내부/외부:"+gate
+                        "개방시간="+openTime,
+                        "전화번호="+phoneNumber,
+                        "개찰구 내부/외부="+gate
                 ),
-                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude))
+                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
+                station
         );
     }
 }

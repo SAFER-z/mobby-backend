@@ -30,7 +30,7 @@ public class StationTasklet implements Tasklet {
 
         List<Station> stations = items.stream()
                 .map(StationDto::toEntity)
-                .collect(Collectors.toList());
+                .toList();
 
         stationRepository.saveAll(stations);
         return RepeatStatus.FINISHED;

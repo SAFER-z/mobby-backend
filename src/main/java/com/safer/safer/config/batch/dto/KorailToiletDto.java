@@ -20,11 +20,12 @@ public class KorailToiletDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.DISABLED_TOILET),
-                FacilityType.DISABLED_TOILET,
+                CsvUtil.generateNameByStation(station, FacilityType.ACCESSIBLE_TOILET),
+                FacilityType.ACCESSIBLE_TOILET,
                 detailLocation,
-                "개찰구 내부/외부:"+gate,
-                station.getCoordinate()
+                "개찰구 내부/외부="+gate,
+                station.getCoordinate(),
+                station
         );
     }
 }

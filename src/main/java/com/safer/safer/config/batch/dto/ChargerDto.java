@@ -21,13 +21,13 @@ public class ChargerDto {
     @CsvBindByPosition(position = 5)
     private String detailLocation;
     @CsvBindByPosition(position = 6)
-    private String weekdayStartTime;
+    private String weekdayOpenTime;
     @CsvBindByPosition(position = 7)
-    private String weekdayEndTime;
+    private String weekdayCloseTime;
     @CsvBindByPosition(position = 8)
-    private String weekendStartTime;
+    private String weekendOpenTime;
     @CsvBindByPosition(position = 9)
-    private String weekendEndTime;
+    private String weekendCloseTime;
     @CsvBindByPosition(position = 10)
     private String operator;
     @CsvBindByPosition(position = 11)
@@ -35,16 +35,16 @@ public class ChargerDto {
 
     public Facility toEntity() {
         return Facility.of(
-                name,
-                FacilityType.CHARGER,
+                String.join(" ", name, FacilityType.WHEELCHAIR_CHARGER.getName()),
+                FacilityType.WHEELCHAIR_CHARGER,
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
                 roadAddress.isBlank() ? streetAddress : roadAddress,
                 detailLocation,
                 String.join(";",
-                        "시설운영주체:"+operator,
-                        "전화번호:"+phoneNumber,
-                        "평일 운영시간:"+String.join("~", weekdayStartTime, weekdayEndTime),
-                        "주말 운영시간:"+String.join("~", weekendStartTime, weekendEndTime)
+                        "관리기관명="+operator,
+                        "전화번호="+phoneNumber,
+                        "평일 운영시간="+String.join("~", weekdayOpenTime, weekdayCloseTime),
+                        "주말 운영시간="+String.join("~", weekendOpenTime, weekendCloseTime)
                 )
         );
     }

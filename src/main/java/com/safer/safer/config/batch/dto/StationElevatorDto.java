@@ -23,14 +23,13 @@ public class StationElevatorDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.ELEVATOR),
+                CsvUtil.generateNameByStation(station, FacilityType.ELEVATOR)
+                        + " " + number.replaceAll("#", "") + "호기",
                 FacilityType.ELEVATOR,
                 detailLocation,
-                String.join(";",
-                        "호기:"+number.replaceAll("#", " "),
-                        "운행구간:"+operatingRoute
-                ),
-                station.getCoordinate()
+                "운행구간="+operatingRoute,
+                station.getCoordinate(),
+                station
         );
     }
 }

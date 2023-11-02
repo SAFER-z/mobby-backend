@@ -29,9 +29,14 @@ public class JobConfig {
                 .next(stationRampStep(jobRepository, transactionManager))
                 .next(stationLiftStep(jobRepository, transactionManager))
                 .next(stationToiletStep(jobRepository, transactionManager))
-                .next(DisabledFacilityStep(jobRepository, transactionManager))
+                .next(DisabledEtcStep(jobRepository, transactionManager))
+                .next(DisabledResidentialStep(jobRepository, transactionManager))
+                .next(CommunityRehabStep(jobRepository, transactionManager))
+                .next(MedicalRehabStep(jobRepository, transactionManager))
+                .next(VocationalRehabStep(jobRepository, transactionManager))
                 .next(ChargerStep(jobRepository, transactionManager))
                 .next(ToiletStep(jobRepository, transactionManager))
+                .next(ParkingLotStep(jobRepository, transactionManager))
                 .build();
     }
 
@@ -57,9 +62,44 @@ public class JobConfig {
     }
 
     @Bean
-    public Step DisabledFacilityStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("disabledFacilityStep", jobRepository)
-                .tasklet(new DisabledFacilityTasklet(facilityRepository), transactionManager)
+    public Step ParkingLotStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("parkingLotStep", jobRepository)
+                .tasklet(new ParkingLotTasklet(facilityRepository), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step DisabledEtcStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("disabledEtcStep", jobRepository)
+                .tasklet(new DisabledEtcTasklet(facilityRepository), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step DisabledResidentialStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("disabledResidentialStep", jobRepository)
+                .tasklet(new DisabledResidentialTasklet(facilityRepository), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step CommunityRehabStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("communityRehabStep", jobRepository)
+                .tasklet(new CommunityRehabTasklet(facilityRepository), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step MedicalRehabStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("medicalRehabStep", jobRepository)
+                .tasklet(new MedicalRehabTasklet(facilityRepository), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step VocationalRehabStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("vocationalRehabStep", jobRepository)
+                .tasklet(new VocationalRehabTasklet(facilityRepository), transactionManager)
                 .build();
     }
 

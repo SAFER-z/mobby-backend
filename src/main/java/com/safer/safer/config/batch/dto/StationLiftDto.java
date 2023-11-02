@@ -22,14 +22,13 @@ public class StationLiftDto {
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.LIFT),
-                FacilityType.LIFT,
+                CsvUtil.generateNameByStation(station, FacilityType.WHEELCHAIR_LIFT)
+                        + " " + number.replaceAll("#", "") + "호기",
+                FacilityType.WHEELCHAIR_LIFT,
                 detailLocation,
-                String.join(";",
-                        "호기:"+number.replaceAll("#", " "),
-                        "운행구간:"+operatingRoute
-                ),
-                station.getCoordinate()
+                "운행구간="+operatingRoute,
+                station.getCoordinate(),
+                station
         );
     }
 }

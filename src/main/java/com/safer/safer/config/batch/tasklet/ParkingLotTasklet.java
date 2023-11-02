@@ -1,8 +1,9 @@
 package com.safer.safer.config.batch.tasklet;
 
-import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.config.batch.dto.ChargerDto;
+import com.safer.safer.config.batch.dto.ParkingLotDto;
 import com.safer.safer.domain.Facility;
+import com.safer.safer.domain.util.CsvUtil;
 import com.safer.safer.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -19,17 +20,17 @@ import static com.safer.safer.config.batch.tasklet.Constant.EUC_KR;
 
 @Component
 @RequiredArgsConstructor
-public class ChargerTasklet implements Tasklet {
+public class ParkingLotTasklet implements Tasklet {
 
     private final FacilityRepository facilityRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception{
-        String filePath = new ClassPathResource("data/charger.csv").getURI().getPath();
-        List<ChargerDto> items = CsvUtil.readCsv(filePath, EUC_KR, ChargerDto.class);
+        String filePath = new ClassPathResource("data/parking_lot.csv").getURI().getPath();
+        List<ParkingLotDto> items = CsvUtil.readCsv(filePath, EUC_KR, ParkingLotDto.class);
 
         List<Facility> chargers = items.stream()
-                .map(ChargerDto::toEntity)
+                .map(ParkingLotDto::toEntity)
                 .toList();
 
         facilityRepository.saveAll(chargers);

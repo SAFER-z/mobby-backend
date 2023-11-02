@@ -12,4 +12,5 @@ public class Constant {
     public static final String STATION = "역";
     public static final String LINE = "선";
     public static final String NUMBER_LINE = "호선";
+    public static final String SEOUL = "서울특별시";
 }
