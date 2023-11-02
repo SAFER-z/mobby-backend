@@ -1,6 +1,7 @@
 package com.safer.safer.dto;
 
 import com.safer.safer.domain.Facility;
+import com.safer.safer.domain.FacilityType;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 public record FacilityDetailResponse(
         String name,
+        FacilityType type,
         String address,
         String detailLocation,
         Map<String, String> additional,
@@ -28,6 +30,7 @@ public record FacilityDetailResponse(
 
         return new FacilityDetailResponse(
                 facility.getName(),
+                facility.getType(),
                 facility.isInStation() ? facility.getStation().getAddress() : facility.getAddress(),
                 facility.getDetailLocation(),
                 additional,
