@@ -13,4 +13,8 @@ public record CoordinateRequest(
                 longitude
         );
     }
+
+    public static CoordinateRequest of(double latitude, double longitude) {
+        return new CoordinateRequest(latitude, longitude);
+    }
 }

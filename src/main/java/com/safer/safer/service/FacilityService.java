@@ -1,5 +1,6 @@
 package com.safer.safer.service;
 
+import com.safer.safer.domain.FacilityType;
 import com.safer.safer.dto.CoordinateRequest;
 import com.safer.safer.dto.FacilitiesResponse;
 import com.safer.safer.dto.FacilityDetailResponse;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import static com.safer.safer.exception.ExceptionCode.NO_SUCH_FACILITY;
+import static com.safer.safer.exception.ExceptionCode.NO_SUCH_FACILITY_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +39,9 @@ public class FacilityService {
     }
 
     public FacilitiesResponse findFacilitiesByDistanceAndCategory(Point userCoordinate, String category) {
+        if(FacilityType.isNotValidType(category))
+            throw new NoSuchElementException(NO_SUCH_FACILITY_TYPE, category);
+
         return FacilitiesResponse.of(facilityRepository.findAllByDistanceAndType(userCoordinate, category).stream()
                 .map(FacilityResponse::from)
                 .toList());

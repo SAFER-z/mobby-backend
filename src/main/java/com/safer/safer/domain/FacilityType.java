@@ -32,4 +32,9 @@ public enum FacilityType {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_FACILITY_TYPE, type));
     }
+
+    public static boolean isNotValidType(String type) {
+        return Arrays.stream(values())
+                .noneMatch(facilityType -> facilityType.name().equals(type));
+    }
 }
