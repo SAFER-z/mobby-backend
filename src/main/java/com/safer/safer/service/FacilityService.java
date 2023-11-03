@@ -30,9 +30,6 @@ public class FacilityService {
     public FacilitiesResponse findFacilitiesByDistance(CoordinateRequest coordinate, String category) {
         Point userCoordinate = coordinate.toPoint();
 
-        if(FacilityType.isNotValidType(category))
-            throw new NoSuchElementException(NO_SUCH_FACILITY_TYPE, category);
-
         if(StringUtils.hasText(category))
             return findFacilitiesByDistanceAndCategory(userCoordinate, category);
 
@@ -42,6 +39,9 @@ public class FacilityService {
     }
 
     public FacilitiesResponse findFacilitiesByDistanceAndCategory(Point userCoordinate, String category) {
+        if(FacilityType.isNotValidType(category))
+            throw new NoSuchElementException(NO_SUCH_FACILITY_TYPE, category);
+
         return FacilitiesResponse.of(facilityRepository.findAllByDistanceAndType(userCoordinate, category).stream()
                 .map(FacilityResponse::from)
                 .toList());

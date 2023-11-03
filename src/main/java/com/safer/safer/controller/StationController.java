@@ -20,8 +20,11 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity<StationsResponse> findAll(@RequestBody CoordinateRequest coordinate) {
+    public ResponseEntity<StationsResponse> findAll(
+            @RequestParam("lat") double latitude,
+            @RequestParam("lon") double longitude
+    ) {
+        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
         return ResponseEntity.ok(stationService.findStationsByDistance(coordinate));
     }
-
 }

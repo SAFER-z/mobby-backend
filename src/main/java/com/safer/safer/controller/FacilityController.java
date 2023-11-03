@@ -21,9 +21,11 @@ public class FacilityController {
 
     @GetMapping
     public ResponseEntity<FacilitiesResponse> findAll(
-            @RequestBody CoordinateRequest coordinate,
+            @RequestParam("lat") double latitude,
+            @RequestParam("lon") double longitude,
             @RequestParam(required = false) String category
     ) {
+        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
         return ResponseEntity.ok(facilityService.findFacilitiesByDistance(coordinate, category));
     }
 }
