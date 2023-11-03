@@ -27,9 +27,9 @@ public class CsvUtil {
                     .parse();
 
         } catch (FileNotFoundException e) {
-            throw new FileIOException(FILE_NOT_FOUND);
+            throw new FileIOException(FILE_NOT_FOUND, filePath);
         } catch (IOException e) {
-            throw new FileIOException(FAIL_TO_READ_FILE);
+            throw new FileIOException(FAIL_TO_READ_FILE, filePath);
         }
     }
 

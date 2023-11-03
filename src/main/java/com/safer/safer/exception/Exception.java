@@ -21,7 +21,7 @@ public class Exception extends RuntimeException {
     }
 
     public Exception(final ExceptionCode exceptionCode, final String element) {
-        super(exceptionCode.getMessage().concat(element));
+        super(exceptionCode.getMessage().concat(" ("+element+")"));
         this.status = exceptionCode.getStatus();
     }
 }
