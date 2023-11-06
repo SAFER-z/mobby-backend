@@ -33,9 +33,9 @@ public class StationToiletDto {
                 FacilityType.ACCESSIBLE_TOILET,
                 detailLocation,
                 String.join(";",
-                        "개방시간="+openTime,
-                        "전화번호="+phoneNumber,
-                        "개찰구 내부/외부="+gate
+                        "weekdayOpeningHours="+openTime,
+                        "phoneNumber="+phoneNumber,
+                        "turnstile="+gate
                 ),
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
                 station

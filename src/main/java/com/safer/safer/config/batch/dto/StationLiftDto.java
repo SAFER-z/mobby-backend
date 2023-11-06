@@ -26,7 +26,7 @@ public class StationLiftDto {
                         + " " + number.replaceAll("#", "") + "호기",
                 FacilityType.WHEELCHAIR_LIFT,
                 detailLocation,
-                "운행구간="+operatingRoute,
+                "route="+operatingRoute,
                 station.getCoordinate(),
                 station
         );

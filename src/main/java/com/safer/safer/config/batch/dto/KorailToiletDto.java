@@ -23,7 +23,7 @@ public class KorailToiletDto {
                 CsvUtil.generateNameByStation(station, FacilityType.ACCESSIBLE_TOILET),
                 FacilityType.ACCESSIBLE_TOILET,
                 detailLocation,
-                "개찰구 내부/외부="+gate,
+                "turnstile="+gate,
                 station.getCoordinate(),
                 station
         );

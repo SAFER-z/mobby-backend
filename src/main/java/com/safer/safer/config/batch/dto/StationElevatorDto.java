@@ -27,7 +27,7 @@ public class StationElevatorDto {
                         + " " + number.replaceAll("#", "") + "호기",
                 FacilityType.ELEVATOR,
                 detailLocation,
-                "운행구간="+operatingRoute,
+                "route="+operatingRoute,
                 station.getCoordinate(),
                 station
         );

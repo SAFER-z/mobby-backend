@@ -27,8 +27,8 @@ public class DisabledFacilityDto {
                 TMapUtil.findPointByKeyword(address),
                 address,
                 String.join(";",
-                        "시설유형="+ CsvUtil.parseParenthesis(detailType),
-                        "전화번호="+phoneNumber
+                        "facilityType="+ CsvUtil.parseParenthesis(detailType),
+                        "phoneNumber="+phoneNumber
                 )
         );
     }
