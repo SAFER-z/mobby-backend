@@ -23,7 +23,7 @@ public class KorailChargerDto {
                 CsvUtil.generateNameByStation(station, FacilityType.WHEELCHAIR_CHARGER),
                 FacilityType.WHEELCHAIR_CHARGER,
                 detailLocation,
-                phoneNumber.isBlank() ? "" : "전화번호="+phoneNumber,
+                phoneNumber.isBlank() ? "" : "phoneNumber="+phoneNumber,
                 station.getCoordinate(),
                 station
         );

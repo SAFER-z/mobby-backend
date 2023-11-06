@@ -1,7 +1,17 @@
+buildscript {
+	ext {
+		restdocsApiSecVersion = '0.17.1'
+	}
+}
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.11'
 	id 'io.spring.dependency-management' version '1.1.3'
+
+	//api documentation
+	id 'com.epages.restdocs-api-spec' version "${restdocsApiSecVersion}"
+	id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'com.safer'
@@ -24,6 +34,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
 
 	//postGIS
 	implementation 'org.hibernate:hibernate-spatial:6.1.7.Final'
@@ -34,6 +45,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 	testImplementation 'org.springframework.batch:spring-batch-test'
 
+	//restdocs
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation "com.epages:restdocs-api-spec-mockmvc:${restdocsApiSecVersion}"
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -42,4 +58,19 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootJar {
+	dependsOn(':openapi3')
+}
+
+openapi3 {
+	def serverUrl = System.getenv("SERVER_URL")
+	server = "$serverUrl"
+	title = "Mobby API 문서"
+	description = "Spring REST Docs with Swagger UI"
+	version = "0.0.1"
+	outputFileNamePrefix = 'open-api-3.0.1'
+	format = 'json'
+	outputDirectory = 'src/main/resources/static/docs'
 }

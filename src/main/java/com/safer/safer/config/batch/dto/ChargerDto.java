@@ -41,10 +41,10 @@ public class ChargerDto {
                 roadAddress.isBlank() ? streetAddress : roadAddress,
                 detailLocation,
                 String.join(";",
-                        "관리기관명="+operator,
-                        "전화번호="+phoneNumber,
-                        "평일 운영시간="+String.join("~", weekdayOpenTime, weekdayCloseTime),
-                        "주말 운영시간="+String.join("~", weekendOpenTime, weekendCloseTime)
+                        "operator="+operator,
+                        "phoneNumber="+phoneNumber,
+                        "weekdayOpeningHours="+String.join("~", weekdayOpenTime, weekdayCloseTime),
+                        "weekendOpeningHours="+String.join("~", weekendOpenTime, weekendCloseTime)
                 )
         );
     }

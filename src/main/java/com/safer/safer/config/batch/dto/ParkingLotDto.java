@@ -63,17 +63,17 @@ public class ParkingLotDto {
                 coordinate,
                 roadAddress.isBlank() ? String.join(" ", SEOUL, address) : roadAddress,
                 Stream.of(
-                        "운영구분="+operatingType,
-                        phoneNumber.isBlank() ? "" : "전화번호="+phoneNumber,
-                        capacity.isBlank() ? "" : "주차공간="+capacity,
-                        "유료/무료="+freeOrPaid,
-                        "평일 운영시간="+String.join("~", CsvUtil.parseTime(weekdayOpenTime), CsvUtil.parseTime(weekdayCloseTime)),
-                        "주말 운영시간="+String.join("~", CsvUtil.parseTime(weekendOpenTime), CsvUtil.parseTime(weekendCloseTime)),
-                        monthlyPrice.isBlank() ? "" : "월 정기권 금액="+monthlyPrice,
+                        "operatingType="+operatingType,
+                        phoneNumber.isBlank() ? "" : "phoneNumber="+phoneNumber,
+                        capacity.isBlank() ? "" : "capacity="+capacity,
+                        "fee="+freeOrPaid,
+                        "weekdayOpeningHours="+String.join("~", CsvUtil.parseTime(weekdayOpenTime), CsvUtil.parseTime(weekdayCloseTime)),
+                        "weekendOpeningHours="+String.join("~", CsvUtil.parseTime(weekendOpenTime), CsvUtil.parseTime(weekendCloseTime)),
+                        monthlyPrice.isBlank() ? "" : "subscription="+monthlyPrice,
                         freeOrPaid.equals("무료") ? "" : standardFee.isBlank() ? "" :
-                                "기본주차요금="+standardFee+"/"+standardUnit+"분",
+                                "standardFee="+standardFee+"/"+standardUnit+"분",
                         freeOrPaid.equals("무료") ? "" : additionalFee.isBlank() ? "" :
-                                "추가주차요금="+additionalFee+"/"+additionalUnit+"분"
+                                "additionalFee="+additionalFee+"/"+additionalUnit+"분"
                 )
                         .filter(info -> !info.isBlank())
                         .collect(Collectors.joining(";"))
