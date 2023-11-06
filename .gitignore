@@ -41,4 +41,4 @@ out/
 src/main/resources/data/
 
 ### REST Docs ###
-src/main/resources/static/docs/
+src/main/resources/static/docs/open-api-3.0.1.json
