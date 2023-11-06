@@ -61,7 +61,11 @@ tasks.named('test') {
 }
 
 bootJar {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	dependsOn(':openapi3')
+	from("src/main/resources/static/docs") {
+		into 'BOOT-INF/classes/static/docs'
+	}
 }
 
 openapi3 {
