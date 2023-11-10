@@ -1,10 +1,8 @@
 package com.safer.safer.controller;
 
 import com.safer.safer.dto.ErrorResponse;
+import com.safer.safer.exception.*;
 import com.safer.safer.exception.Exception;
-import com.safer.safer.exception.FileIOException;
-import com.safer.safer.exception.NoSuchElementException;
-import com.safer.safer.exception.TMapException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,7 +20,7 @@ public class ControllerAdvice {
                 .body(ErrorResponse.from(exception));
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
+    @ExceptionHandler({NoSuchElementException.class, OAuthException.class})
     public ResponseEntity<ErrorResponse> noSuchElementExceptionHandler(final Exception exception) {
         logWarn(exception);
         return ResponseEntity

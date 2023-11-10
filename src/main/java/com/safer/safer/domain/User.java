@@ -1,5 +1,6 @@
 package com.safer.safer.domain;
 
+import com.safer.safer.auth.ProviderType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,10 +15,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String name;
-
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Enumerated(value = EnumType.STRING)
+    private ProviderType providerType;
+
+    private User(String email, String name, ProviderType providerType) {
+        this.email = email;
+        this.name = name;
+        this.providerType = providerType;
+    }
+
+    public static User of(String email, String name, ProviderType providerType) {
+        return new User(email, name, providerType);
+    }
 }

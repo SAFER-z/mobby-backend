@@ -15,6 +15,17 @@ spring:
         show_sql: false
     open-in-view: false
 
+oauth2:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    response-type: code
+    grant-type: authorization_code
+    authorization-uri: https://kauth.kakao.com/oauth/authorize
+    redirect-uri: ${SERVER_URL}/api/oauth/login/kakao
+    token-uri: https://kauth.kakao.com/oauth/token
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
