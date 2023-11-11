@@ -48,4 +48,27 @@ public class JwtProvider {
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
+
+    public void validateToken(String token) {
+        try {
+            parseToken(token);
+        } catch (ExpiredJwtException e) {
+            throw new JwtException(EXPIRED_ACCESS_TOKEN);
+        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
+            throw new JwtException(INVALID_ACCESS_TOKEN);
+        }
+    }
+
+    public String getSubject(String token) {
+        return parseToken(token)
+                .getBody()
+                .getSubject();
+    }
+
+    private Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
+    }
 }

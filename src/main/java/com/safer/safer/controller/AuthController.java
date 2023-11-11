@@ -1,7 +1,7 @@
 package com.safer.safer.controller;
 
 import com.safer.safer.dto.AccessTokenResponse;
-import com.safer.safer.dto.TokensResponse;
+import com.safer.safer.dto.UserTokens;
 import com.safer.safer.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +32,11 @@ public class AuthController {
     @GetMapping("/login/{provider}")
     public ResponseEntity<AccessTokenResponse> login(
             @PathVariable final String provider,
-            @RequestParam("code") final String authorizationCode,
-            HttpServletResponse response
+            @RequestParam("code") final String authorizationCode
     ) {
-        TokensResponse tokens = authService.login(provider, authorizationCode);
-        ResponseCookie cookie = authService.generateCookie(tokens.refreshToken());
-        response.addHeader(SET_COOKIE, cookie.toString());
+        UserTokens tokens = authService.login(provider, authorizationCode);
+        //ResponseCookie cookie = authService.generateCookie(tokens.refreshToken());
+        //response.addHeader(SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(AccessTokenResponse.of(tokens.accessToken()));
     }

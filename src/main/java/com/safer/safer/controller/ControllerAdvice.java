@@ -20,7 +20,7 @@ public class ControllerAdvice {
                 .body(ErrorResponse.from(exception));
     }
 
-    @ExceptionHandler({NoSuchElementException.class, OAuthException.class})
+    @ExceptionHandler({NoSuchElementException.class, OAuthException.class, AuthException.class})
     public ResponseEntity<ErrorResponse> noSuchElementExceptionHandler(final Exception exception) {
         logWarn(exception);
         return ResponseEntity

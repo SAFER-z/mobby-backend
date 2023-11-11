@@ -21,7 +21,13 @@ public enum ExceptionCode {
 
     FAIL_TO_REQUEST_TOKEN("OAuth 서버에 인증을 요청하는 과정에서 문제가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     FAIL_TO_REQUEST_USER_INFO("OAuth 서버에 사용자 정보를 요청하는 과정에서 문제가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    UNSUPPORTED_OAUTH_TYPE("지원하지 않는 소셜 로그인 종류입니다.", HttpStatus.BAD_REQUEST);
+    UNSUPPORTED_OAUTH_TYPE("지원하지 않는 소셜 로그인 종류입니다.", HttpStatus.BAD_REQUEST),
+
+    INVALID_REQUEST("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST),
+    INVALID_ACCESS_TOKEN("올바르지 않은 형식의 AccessToken입니다.", HttpStatus.BAD_REQUEST),
+    EXPIRED_ACCESS_TOKEN("AccessToken의 기한이 만료되었습니다.", HttpStatus.UNAUTHORIZED);
+
+
 
     private final String message;
     private final HttpStatus status;
