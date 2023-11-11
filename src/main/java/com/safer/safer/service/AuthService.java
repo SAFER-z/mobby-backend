@@ -1,11 +1,8 @@
 package com.safer.safer.service;
 
-import com.safer.safer.auth.OAuthProviderComposite;
-import com.safer.safer.auth.OAuthUserInfo;
-import com.safer.safer.auth.OauthProvider;
-import com.safer.safer.auth.ProviderType;
+import com.safer.safer.auth.*;
 import com.safer.safer.domain.User;
-import com.safer.safer.dto.TokensResponse;
+import com.safer.safer.dto.UserTokens;
 import com.safer.safer.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
@@ -21,8 +18,9 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final OAuthProviderComposite oAuthProviderComposite;
+    private final JwtProvider jwtProvider;
 
-    public TokensResponse login(String providerType, String code) {
+    public UserTokens login(String providerType, String code) {
         OauthProvider provider = oAuthProviderComposite.matchProvider(providerType);
         OAuthUserInfo userInfo = provider.getUserInfo(code);
         User user = findOrRegister(
@@ -30,8 +28,9 @@ public class AuthService {
                 userInfo.getName(),
                 ProviderType.from(providerType)
         );
-        // TODO: jwt 토큰 발급
-        return null;
+        UserTokens tokens = jwtProvider.createTokens(user.getId().toString());
+        //TODO: refreshToken Redis 저장
+        return tokens;
     }
 
     private User findOrRegister(String email, String name, ProviderType providerType) {
