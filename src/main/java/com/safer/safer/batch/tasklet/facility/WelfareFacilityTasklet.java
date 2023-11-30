@@ -1,6 +1,6 @@
 package com.safer.safer.batch.tasklet.facility;
 
-import com.safer.safer.batch.dto.facility.DisabledFacilityDto;
+import com.safer.safer.batch.dto.facility.WelfareFacilityDto;
 import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.facility.domain.repository.FacilityRepository;
@@ -18,20 +18,20 @@ import static com.safer.safer.batch.util.BatchConstant.EUC_KR;
 
 @Component
 @RequiredArgsConstructor
-public class VocationalRehabTasklet implements Tasklet {
+public class WelfareFacilityTasklet implements Tasklet {
 
     private final FacilityRepository facilityRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String filePath = new ClassPathResource("data/vocational_rehabilitation.csv").getURI().getPath();
-        List<DisabledFacilityDto> items = CsvUtil.readCsv(filePath, EUC_KR, DisabledFacilityDto.class);
+        String filePath = new ClassPathResource("data/welfare_facility.csv").getURI().getPath();
+        List<WelfareFacilityDto> items = CsvUtil.readCsv(filePath, EUC_KR, WelfareFacilityDto.class);
 
-        List<Facility> disabledFacilities = items.stream()
-                .map(DisabledFacilityDto::toEntity)
+        List<Facility> welfareFacilities = items.stream()
+                .map(WelfareFacilityDto::toEntity)
                 .toList();
 
-        facilityRepository.saveAll(disabledFacilities);
+        facilityRepository.saveAll(welfareFacilities);
         return RepeatStatus.FINISHED;
     }
 }

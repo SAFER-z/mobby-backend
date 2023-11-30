@@ -1,14 +1,13 @@
 package com.safer.safer.batch.dto.facility;
 
 import com.opencsv.bean.CsvBindByPosition;
-import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.TMapUtil;
 import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.facility.domain.FacilityType;
 import lombok.Getter;
 
 @Getter
-public class DisabledFacilityDto {
+public class WelfareFacilityDto {
     @CsvBindByPosition(position = 0)
     private String name;
     @CsvBindByPosition(position = 1)
@@ -23,11 +22,11 @@ public class DisabledFacilityDto {
     public Facility toEntity() {
         return Facility.of(
                 name,
-                FacilityType.from(type),
+                FacilityType.WELFARE_FACILITY,
                 TMapUtil.findPointByKeyword(address),
                 address,
                 String.join(";",
-                        "facilityType="+ CsvUtil.parseParenthesis(detailType),
+                        "type="+type+"-"+detailType,
                         "phoneNumber="+phoneNumber
                 )
         );

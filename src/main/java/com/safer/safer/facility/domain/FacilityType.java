@@ -18,11 +18,7 @@ public enum FacilityType {
     PARKING_LOT("주차구역"),
     ACCESSIBLE_RAMP("경사로"),
     ELEVATOR("엘리베이터"),
-    ETC("장애인사회복지시설 기타"),
-    RESIDENTIAL("장애인거주시설"),
-    COMMUNITY_REHABILITATION("장애인지역사회재활시설"),
-    VOCATIONAL_REHABILITATION("장애인직업재활시설"),
-    MEDICAL_REHABILITATION("장애인의료재활시설");
+    WELFARE_FACILITY("복지시설");
 
     private final String name;
 
