@@ -19,35 +19,41 @@ public class Station {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String line;
+    @Embedded
+    private StationKey stationKey;
 
     @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
-    private String operator;
+    private Point coordinate;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     private String imageUrl;
 
-    @Column(nullable = false)
-    private Point coordinate;
+    private boolean rampAvailable;
+
+    private String accessibleArea;
 
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final Set<Facility> facilities = new LinkedHashSet<>();
 
-    private Station(String name, String line, String operator, String address, Point coordinate) {
-        this.name = name;
-        this.line = line;
-        this.operator = operator;
+    private Station(StationKey stationKey, String address, Point coordinate, String phoneNumber, boolean rampAvailable, String accessibleArea) {
+        this.stationKey = stationKey;
         this.address = address;
         this.coordinate = coordinate;
+        this.phoneNumber = phoneNumber;
+        this.rampAvailable = rampAvailable;
+        this.accessibleArea = accessibleArea;
     }
 
-    public static Station of(String name, String line, String operator, String address, Point coordinate) {
-        return new Station(name, line, operator, address, coordinate);
+    public static Station of(StationKey stationKey, String address, Point coordinate, String phoneNumber, boolean rampAvailable, String accessibleArea) {
+        return new Station(stationKey, address, coordinate, phoneNumber, rampAvailable, accessibleArea);
+    }
+
+    public static Station of(StationKey stationKey, String address, Point coordinate, String phoneNumber, boolean rampAvailable) {
+        return new Station(stationKey, address, coordinate, phoneNumber, rampAvailable, null);
     }
 }
