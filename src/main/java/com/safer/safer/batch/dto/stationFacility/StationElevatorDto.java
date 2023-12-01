@@ -10,25 +10,35 @@ import lombok.Getter;
 @Getter
 public class StationElevatorDto {
     @CsvBindByPosition(position = 0)
-    private String line;
+    private String operatorType;
     @CsvBindByPosition(position = 1)
-    private String stationName;
+    private String line;
     @CsvBindByPosition(position = 2)
-    private String number;
+    private String stationName;
     @CsvBindByPosition(position = 3)
-    private String detailLocation;
+    private String number;
     @CsvBindByPosition(position = 4)
-    private String operatingRoute;
+    private String detailLocation;
+    @CsvBindByPosition(position = 5)
+    private String start;
+    @CsvBindByPosition(position = 6)
+    private String startFloor;
+    @CsvBindByPosition(position = 7)
+    private String end;
+    @CsvBindByPosition(position = 8)
+    private String endFloor;
 
 
     public Facility toEntity(Station station) {
         return Facility.of(
                 CsvUtil.generateNameByStation(station, FacilityType.ELEVATOR)
-                        + " " + number.replaceAll("#", "") + "호기",
+                        + " " + number + "호기",
                 FacilityType.ELEVATOR,
-                detailLocation,
-                "route="+operatingRoute,
                 station.getCoordinate(),
+                String.join(";",
+                        "detailLocation="+detailLocation,
+                        "route="+start+startFloor+"층-"+end+endFloor+"층"
+                ),
                 station
         );
     }

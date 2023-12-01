@@ -10,9 +10,12 @@ import com.safer.safer.batch.exception.FileIOException;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.safer.safer.batch.util.BatchConstant.*;
 import static com.safer.safer.common.exception.ExceptionCode.*;
+import static com.safer.safer.facility.domain.FacilityType.ACCESSIBLE_TOILET;
+import static com.safer.safer.facility.domain.FacilityType.TOILET;
 
 public class CsvUtil {
     public static <T> List<T> readCsv(String filePath, Charset encoding, Class<T> clazz) throws Exception {
@@ -42,21 +45,7 @@ public class CsvUtil {
     }
 
     public static String generateNameByStation(Station station, FacilityType type) {
-        return String.join(" ", station.getName(), type.getName());
-    }
-
-    public static String generateNameByStation(Station station, String number, FacilityType type) {
-        return String.join(" ", station.getName(), number.concat("번"), type.getName());
-    }
-
-    public static String parseLine(String line) {
-        if(line.matches(NUMBER_REGEX) && !line.endsWith(NUMBER_LINE)) {
-            line = line.concat(NUMBER_LINE);
-        }
-        if(!line.endsWith(LINE))
-            line = line.concat(LINE);
-
-        return line;
+        return String.join(" ", station.getStationKey().getName(), type.getName());
     }
 
     public static String parseParenthesis(String input) {
@@ -72,5 +61,23 @@ public class CsvUtil {
         String hours = input.substring(0, 2);
         String minutes = input.substring(2);
         return hours + ":" + minutes;
+    }
+
+    public static FacilityType getToiletType(
+            String maleAccessibleToilet,
+            String accessibleUrinal,
+            String femaleAccessibleToilet
+    ) {
+        int accessible = Stream.of(maleAccessibleToilet, accessibleUrinal, femaleAccessibleToilet)
+                .mapToInt(Integer::parseInt)
+                .sum();
+
+        return accessible > 0 ? ACCESSIBLE_TOILET : TOILET;
+    }
+
+    public static String parseDetailLocation(String detailLocation, String gate) {
+        gate = gate.replaceAll("#", "").concat("번 ");
+        return detailLocation.equals("출입구") ? gate+detailLocation :
+                gate+"출입구 "+detailLocation;
     }
 }

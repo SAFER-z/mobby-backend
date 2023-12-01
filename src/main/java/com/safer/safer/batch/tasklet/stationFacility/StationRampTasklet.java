@@ -3,9 +3,11 @@ package com.safer.safer.batch.tasklet.stationFacility;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.stationFacility.StationRampDto;
 import com.safer.safer.facility.domain.Facility;
+import com.safer.safer.station.domain.OperatorType;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.common.exception.NoSuchElementException;
 import com.safer.safer.facility.domain.repository.FacilityRepository;
+import com.safer.safer.station.domain.StationKey;
 import com.safer.safer.station.domain.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -30,15 +32,17 @@ public class StationRampTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String filePath = new ClassPathResource("data/station_ramp.csv").getURI().getPath();
-        List<StationRampDto> items = CsvUtil.readCsv(filePath, EUC_KR, StationRampDto.class);
+        String filePath = new ClassPathResource("data/new_station_ramp.csv").getURI().getPath();
+        List<StationRampDto> items = CsvUtil.readCsv(filePath, UTF_8, StationRampDto.class);
         List<Facility> ramps = new ArrayList<>();
 
         items.forEach(ramp -> {
             String stationName = CsvUtil.parseStationName(ramp.getStationName());
-            String line = CsvUtil.parseLine(ramp.getLine());
+            String line = ramp.getLine();
+            String operator = OperatorType.서울교통공사.name();
+            StationKey stationKey = StationKey.of(stationName, line, operator);
 
-            Station station = stationRepository.findByNameAndLine(stationName, line)
+            Station station = stationRepository.findByStationKey(stationKey)
                     .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName+line));
 
             ramps.add(ramp.toEntity(station));

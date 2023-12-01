@@ -14,16 +14,16 @@ public class StationRampDto {
     @CsvBindByPosition(position = 1)
     private String stationName;
     @CsvBindByPosition(position = 2)
-    private String number;
-    @CsvBindByPosition(position = 3)
     private String detailLocation;
+    @CsvBindByPosition(position = 3)
+    private String gate;
 
     public Facility toEntity(Station station) {
         return Facility.of(
-                CsvUtil.generateNameByStation(station, number, FacilityType.ACCESSIBLE_RAMP),
+                CsvUtil.generateNameByStation(station, FacilityType.ACCESSIBLE_RAMP),
                 FacilityType.ACCESSIBLE_RAMP,
                 station.getCoordinate(),
-                detailLocation,
+                "detailLocation="+CsvUtil.parseDetailLocation(detailLocation, gate),
                 station
         );
     }

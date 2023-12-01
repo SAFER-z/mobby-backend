@@ -10,10 +10,12 @@ import lombok.Getter;
 @Getter
 public class StationChargerDto {
     @CsvBindByPosition(position = 0)
-    private String line;
+    private String operatorType;
     @CsvBindByPosition(position = 1)
-    private String stationName;
+    private String line;
     @CsvBindByPosition(position = 2)
+    private String stationName;
+    @CsvBindByPosition(position = 3)
     private String detailLocation;
 
     public Facility toEntity(Station station) {
@@ -21,7 +23,7 @@ public class StationChargerDto {
                 CsvUtil.generateNameByStation(station, FacilityType.WHEELCHAIR_CHARGER),
                 FacilityType.WHEELCHAIR_CHARGER,
                 station.getCoordinate(),
-                detailLocation,
+                "detailLocation="+detailLocation,
                 station
         );
     }
