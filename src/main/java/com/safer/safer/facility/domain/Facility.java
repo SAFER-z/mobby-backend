@@ -24,16 +24,14 @@ public class Facility {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private FacilityType type;
+    private FacilityType category;
 
     @Column(nullable = false)
     private Point coordinate;
 
     private String address;
 
-    private String detailLocation;
-
-    private String additional;
+    private String detailInfo;
 
     @Setter
     private String imageUrl;
@@ -42,34 +40,21 @@ public class Facility {
     @JoinColumn
     private Station station;
 
-    private Facility(String name, FacilityType type, Point coordinate, String address, String detailLocation, String additional, Station station) {
+    private Facility(String name, FacilityType category, Point coordinate, String address, String detailInfo, Station station) {
         this.name = name;
-        this.type = type;
+        this.category = category;
         this.coordinate = coordinate;
         this.address = address;
-        this.detailLocation = detailLocation;
-        this.additional = additional;
+        this.detailInfo = detailInfo;
         this.station = station;
     }
 
-    public static Facility of(String name, FacilityType type, Point coordinate) {
-        return new Facility(name, type, coordinate, null, null, null, null);
+    public static Facility of(String name, FacilityType category, Point coordinate, String address, String detailInfo) {
+        return new Facility(name, category, coordinate, address, detailInfo, null);
     }
 
-    public static Facility of(String name, FacilityType type, Point coordinate, String address, String additional) {
-        return new Facility(name, type, coordinate, address, null, additional, null);
-    }
-
-    public static Facility of(String name, FacilityType type, Point coordinate, String address, String detailLocation, String additional) {
-        return new Facility(name, type, coordinate, address, detailLocation, additional, null);
-    }
-
-    public static Facility of(String name, FacilityType type, Point coordinate, String detailLocation, Station station) {
-        return new Facility(name, type, coordinate, null, detailLocation, null, station);
-    }
-
-    public static Facility of(String name, FacilityType type, String detailLocation, String additional, Point coordinate, Station station) {
-        return new Facility(name, type, coordinate, null, detailLocation, additional, station);
+    public static Facility of(String name, FacilityType category, Point coordinate, String detailInfo, Station station) {
+        return new Facility(name, category, coordinate, station.getAddress(), detailInfo, station);
     }
 
     public boolean isInStation() {

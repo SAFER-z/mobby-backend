@@ -12,15 +12,14 @@ public record FacilityDetailResponse(
         String name,
         FacilityType type,
         String address,
-        String detailLocation,
-        Map<String, String> additional,
+        Map<String, String> detailInfo,
         String imageUrl
 ) {
     public static FacilityDetailResponse from(Facility facility) {
-        Map<String, String> additional = null;
+        Map<String, String> detailInfo = null;
 
-        if(StringUtils.hasText(facility.getAdditional())) {
-            additional = Arrays.stream(facility.getAdditional().split(";"))
+        if(StringUtils.hasText(facility.getDetailInfo())) {
+            detailInfo = Arrays.stream(facility.getDetailInfo().split(";"))
                     .map(info -> info.split("="))
                     .collect(Collectors.toMap(
                             key -> key[0],
@@ -30,10 +29,9 @@ public record FacilityDetailResponse(
 
         return new FacilityDetailResponse(
                 facility.getName(),
-                facility.getType(),
+                facility.getCategory(),
                 facility.isInStation() ? facility.getStation().getAddress() : facility.getAddress(),
-                facility.getDetailLocation(),
-                additional,
+                detailInfo,
                 facility.getImageUrl()
         );
     }

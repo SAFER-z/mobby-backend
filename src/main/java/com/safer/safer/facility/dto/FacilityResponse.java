@@ -6,7 +6,7 @@ import com.safer.safer.facility.domain.FacilityType;
 public record FacilityResponse(
         Long id,
         String name,
-        FacilityType type,
+        FacilityType category,
         double latitude,
         double longitude
 ) {
@@ -14,7 +14,7 @@ public record FacilityResponse(
         return new FacilityResponse(
                 facility.getId(),
                 facility.getName(),
-                facility.getType(),
+                facility.getCategory(),
                 facility.getCoordinate().getX(),
                 facility.getCoordinate().getY()
         );

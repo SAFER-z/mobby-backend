@@ -1,6 +1,7 @@
-package com.safer.safer.batch.util;
+package com.safer.safer.common.infrastructure.tmap;
 
 import com.safer.safer.batch.exception.TMapException;
+import com.safer.safer.batch.util.GeometryUtil;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

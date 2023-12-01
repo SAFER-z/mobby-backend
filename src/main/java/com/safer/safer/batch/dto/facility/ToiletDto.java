@@ -1,25 +1,54 @@
 package com.safer.safer.batch.dto.facility;
 
 import com.opencsv.bean.CsvBindByPosition;
+import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.GeometryUtil;
+import com.safer.safer.common.infrastructure.tmap.TMapUtil;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
+import org.locationtech.jts.geom.Point;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.safer.safer.batch.util.BatchConstant.TOILET;
 
 public class ToiletDto {
     @CsvBindByPosition(position = 0)
-    private String name;
+    private String type;
     @CsvBindByPosition(position = 1)
-    private String detailName;
+    private String name;
     @CsvBindByPosition(position = 2)
-    private String longitude;
+    private String address;
     @CsvBindByPosition(position = 3)
+    private String maleAccessibleToilet;
+    @CsvBindByPosition(position = 4)
+    private String accessibleUrinal;
+    @CsvBindByPosition(position = 5)
+    private String femaleAccessibleToilet;
+    @CsvBindByPosition(position = 6)
+    private String phoneNumber;
+    @CsvBindByPosition(position = 7)
+    private String openingHours;
+    @CsvBindByPosition(position = 8)
     private String latitude;
+    @CsvBindByPosition(position = 9)
+    private String longitude;
 
     public Facility toEntity() {
+        Point coordinate = latitude.isBlank() ? TMapUtil.findPointByKeyword(address) :
+                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
+
         return Facility.of(
-                detailName.isBlank() ? name : name.concat(" "+detailName),
-                FacilityType.TOILET,
-                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude))
+                name.contains(TOILET) ? name : name.concat(" "+type),
+                CsvUtil.getToiletType(maleAccessibleToilet, accessibleUrinal, femaleAccessibleToilet),
+                coordinate,
+                address,
+                Stream.of(
+                        phoneNumber.isBlank() ? "" : "phoneNumber="+phoneNumber,
+                        "openingHours="+openingHours
+                        )
+                        .filter(info -> !info.isBlank())
+                        .collect(Collectors.joining(";"))
         );
     }
 }

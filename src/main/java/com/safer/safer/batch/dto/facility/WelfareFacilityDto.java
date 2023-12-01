@@ -1,7 +1,7 @@
 package com.safer.safer.batch.dto.facility;
 
 import com.opencsv.bean.CsvBindByPosition;
-import com.safer.safer.batch.util.TMapUtil;
+import com.safer.safer.common.infrastructure.tmap.TMapUtil;
 import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.facility.domain.FacilityType;
 import lombok.Getter;
