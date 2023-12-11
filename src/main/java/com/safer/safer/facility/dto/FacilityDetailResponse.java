@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public record FacilityDetailResponse(
         String name,
-        FacilityType type,
+        FacilityType category,
         String address,
         Map<String, String> detailInfo,
         String imageUrl

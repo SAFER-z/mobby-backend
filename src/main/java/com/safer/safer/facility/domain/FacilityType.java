@@ -12,7 +12,6 @@ import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_FACILITY_TY
 @Getter
 public enum FacilityType {
     TOILET("화장실"),
-    ACCESSIBLE_TOILET("장애인화장실"),
     WHEELCHAIR_CHARGER("전동휠체어 급속충전기"),
     WHEELCHAIR_LIFT("휠체어리프트"),
     PARKING_LOT("주차구역"),

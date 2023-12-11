@@ -10,7 +10,8 @@ import org.locationtech.jts.geom.Point;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.safer.safer.batch.util.BatchConstant.TOILET;
+import static com.safer.safer.batch.util.BatchConstant.NORMAL_TOILET;
+import static com.safer.safer.facility.domain.FacilityType.TOILET;
 
 public class ToiletDto {
     @CsvBindByPosition(position = 0)
@@ -39,13 +40,14 @@ public class ToiletDto {
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
 
         return Facility.of(
-                name.contains(TOILET) ? name : name.concat(" "+type),
-                CsvUtil.getToiletType(maleAccessibleToilet, accessibleUrinal, femaleAccessibleToilet),
+                name.contains(NORMAL_TOILET) ? name : name.concat(" "+type),
+                TOILET,
                 coordinate,
                 address,
                 Stream.of(
                         phoneNumber.isBlank() ? "" : "phoneNumber="+phoneNumber,
-                        "openingHours="+openingHours
+                        "openingHours="+openingHours,
+                        "accessible=".concat(CsvUtil.isAccessible(maleAccessibleToilet, accessibleUrinal, femaleAccessibleToilet) ? "yes" : "no")
                         )
                         .filter(info -> !info.isBlank())
                         .collect(Collectors.joining(";"))

@@ -2,12 +2,12 @@ package com.safer.safer.batch.dto.stationFacility;
 
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.batch.util.CsvUtil;
 import lombok.Getter;
 
-import static com.safer.safer.facility.domain.FacilityType.ACCESSIBLE_TOILET;
+import static com.safer.safer.batch.util.BatchConstant.ACCESSIBLE_TOILET;
+import static com.safer.safer.batch.util.BatchConstant.NORMAL_TOILET;
 import static com.safer.safer.facility.domain.FacilityType.TOILET;
 
 @Getter
@@ -28,15 +28,16 @@ public class StationToiletDto {
     private String openingHours;
 
     public Facility toEntity(Station station) {
-        FacilityType toiletType = accessibility.equals("일반") ? TOILET : ACCESSIBLE_TOILET;
+        String toiletType = accessibility.equals("일반") ? NORMAL_TOILET : ACCESSIBLE_TOILET;
         return Facility.of(
                 CsvUtil.generateNameByStation(station, toiletType),
-                toiletType,
+                TOILET,
                 station.getCoordinate(),
                 String.join(";",
                         "detailLocation="+detailLocation,
                         "openingHours="+openingHours,
-                        "turnstile="+turnstile
+                        "turnstile="+turnstile,
+                        "accessible="+(accessibility.equals("일반")?"no":"yes")
                 ),
                 station
         );

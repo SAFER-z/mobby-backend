@@ -3,8 +3,9 @@ package com.safer.safer.batch.dto.facility;
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.common.infrastructure.tmap.TMapUtil;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
 import lombok.Getter;
+
+import static com.safer.safer.facility.domain.FacilityType.WELFARE_FACILITY;
 
 @Getter
 public class WelfareFacilityDto {
@@ -22,7 +23,7 @@ public class WelfareFacilityDto {
     public Facility toEntity() {
         return Facility.of(
                 name,
-                FacilityType.WELFARE_FACILITY,
+                WELFARE_FACILITY,
                 TMapUtil.findPointByKeyword(address),
                 address,
                 String.join(";",

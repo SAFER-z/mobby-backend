@@ -2,7 +2,6 @@ package com.safer.safer.batch.dto.facility;
 
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.GeometryUtil;
 import com.safer.safer.common.infrastructure.tmap.TMapUtil;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.safer.safer.batch.util.BatchConstant.SEOUL;
+import static com.safer.safer.facility.domain.FacilityType.PARKING_LOT;
 
 @Getter
 public class ParkingLotDto {
@@ -59,7 +59,7 @@ public class ParkingLotDto {
 
         return Facility.of(
                 CsvUtil.parseParenthesis(name),
-                FacilityType.PARKING_LOT,
+                PARKING_LOT,
                 coordinate,
                 roadAddress.isBlank() ? String.join(" ", SEOUL, address) : roadAddress,
                 Stream.of(

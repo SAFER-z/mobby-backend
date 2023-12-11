@@ -2,10 +2,11 @@ package com.safer.safer.batch.dto.stationFacility;
 
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.batch.util.CsvUtil;
 import lombok.Getter;
+
+import static com.safer.safer.facility.domain.FacilityType.WHEELCHAIR_LIFT;
 
 @Getter
 public class StationLiftDto {
@@ -34,8 +35,8 @@ public class StationLiftDto {
                 startDetailLocation + " - " + endDetailLocation;
 
         return Facility.of(
-                CsvUtil.generateNameByStation(station, FacilityType.WHEELCHAIR_LIFT),
-                FacilityType.WHEELCHAIR_LIFT,
+                CsvUtil.generateNameByStation(station, WHEELCHAIR_LIFT.getName()),
+                WHEELCHAIR_LIFT,
                 station.getCoordinate(),
                 String.join(";",
                         "detailLocation="+detailLocation,

@@ -3,8 +3,9 @@ package com.safer.safer.batch.dto.facility;
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.batch.util.GeometryUtil;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
 import lombok.Getter;
+
+import static com.safer.safer.facility.domain.FacilityType.WHEELCHAIR_CHARGER;
 
 @Getter
 public class ChargerDto {
@@ -31,8 +32,8 @@ public class ChargerDto {
 
     public Facility toEntity() {
         return Facility.of(
-                String.join(" ", name, FacilityType.WHEELCHAIR_CHARGER.getName()),
-                FacilityType.WHEELCHAIR_CHARGER,
+                String.join(" ", name, WHEELCHAIR_CHARGER.getName()),
+                WHEELCHAIR_CHARGER,
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
                 address,
                 String.join(";",

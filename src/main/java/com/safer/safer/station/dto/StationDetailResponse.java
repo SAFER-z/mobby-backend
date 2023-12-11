@@ -9,10 +9,12 @@ import java.util.Set;
 
 public record StationDetailResponse(
         String name,
-        String address,
         String line,
+        String address,
         String operator,
         String phoneNumber,
+        String imageUrl,
+        boolean hasAccessibleRamp,
         String accessibleArea,
         List<FacilityDetailResponse> facilities
 ) {
@@ -21,11 +23,13 @@ public record StationDetailResponse(
 
         return new StationDetailResponse(
                 station.getStationKey().getName(),
-                station.getAddress(),
                 station.getStationKey().getLine(),
+                station.getAddress(),
                 station.getStationKey().getOperator(),
                 station.getPhoneNumber(),
                 station.getImageUrl(),
+                station.isRampAvailable(),
+                station.getAccessibleArea(),
                 facilities.stream()
                         .map(FacilityDetailResponse::from)
                         .toList()

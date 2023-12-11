@@ -9,7 +9,8 @@ public class BatchConstant {
 
     public static final Charset UTF_8 = StandardCharsets.UTF_8;
     public static final Charset EUC_KR = Charset.forName("euc-kr");
-    public static final String TOILET = "화장실";
+    public static final String NORMAL_TOILET = "화장실";
+    public static final String ACCESSIBLE_TOILET = "장애인화장실";
     public static final String STATION = "역";
     public static final String LINE = "선";
     public static final String NUMBER_LINE = "호선";
