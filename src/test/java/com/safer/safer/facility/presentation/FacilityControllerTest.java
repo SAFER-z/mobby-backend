@@ -47,6 +47,7 @@ public class FacilityControllerTest extends ControllerTest {
                                 1L,
                                 "강변 공영주차장",
                                 FacilityType.PARKING_LOT,
+                                "서울특별시 성동구 둘레길 47-5 (성수동1가)",
                                 37.53696583,
                                 127.0490425
                         )))
@@ -80,7 +81,9 @@ public class FacilityControllerTest extends ControllerTest {
                                                         fieldWithPath("facilities").description("편의시설 상세 정보 목록"),
                                                         fieldWithPath("facilities[].id").description("편의시설 id"),
                                                         fieldWithPath("facilities[].name").description("편의시설 이름"),
-                                                        fieldWithPath("facilities[].type").description("편의시설 종류"),
+                                                        fieldWithPath("facilities[].category").description("편의시설 종류"),
+                                                        fieldWithPath("facilities[].address").description("편의시설 주소"),
+                                                        fieldWithPath("facilities[].isAccessible").optional().type(boolean.class).description("(화장실)장애인화장실 여부"),
                                                         fieldWithPath("facilities[].latitude").description("편의시설 위도"),
                                                         fieldWithPath("facilities[].longitude").description("편의시설 경도")
                                                 )
@@ -92,31 +95,27 @@ public class FacilityControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("편의시설 상세 조회")
-    void findFacility() throws Exception {
+    @DisplayName("주차장 상세 조회")
+    void findParkingLot() throws Exception {
         //given
         when(facilityService.findFacility(anyLong()))
                 .thenReturn(new FacilityDetailResponse(
-                        "잠실역 휠체어리프트",
-                        FacilityType.WHEELCHAIR_LIFT,
-                        "서울특별시 송파구 올림픽로 지하 265",
-                        "잠실쇼핑센터 측 연결계단",
+                        "강변 공영주차장",
+                        FacilityType.PARKING_LOT,
+                        "서울특별시 성동구 둘레길 47-5 (성수동1가)",
                                 Map.ofEntries(
+                                        Map.entry("operatingType",""),
                                         Map.entry("phoneNumber",""),
-                                        Map.entry("operator",""),
+                                        Map.entry("capacity",""),
+                                        Map.entry("accessible",""),
+                                        Map.entry("free",""),
                                         Map.entry("weekdayOpeningHours",""),
                                         Map.entry("weekendOpeningHours",""),
-                                        Map.entry("route","B1-B1"),
-                                        Map.entry("turnstile",""),
-                                        Map.entry("facilityType",""),
-                                        Map.entry("operatingType",""),
-                                        Map.entry("capacity",""),
-                                        Map.entry("fee",""),
                                         Map.entry("subscription",""),
                                         Map.entry("standardFee",""),
                                         Map.entry("additionalFee","")
                                 ),
-                        "mobby/images/wheelchair_lift.png"
+                        "mobby/images/parking_lot.png"
                 ));
 
         //then
@@ -134,32 +133,191 @@ public class FacilityControllerTest extends ControllerTest {
                                 resource(
                                         ResourceSnippetParameters.builder()
                                                 .tag("편의시설 API")
-                                                .description("편의시설 상세 조회")
+                                                .description("편의시설 상세 조회 (주차장)")
                                                 .pathParameters(
                                                         parameterWithName("facilityId").description("편의시설 id")
                                                 )
                                                 .responseFields(
-                                                        fieldWithPath("name").description("편의시설 이름"),
-                                                        fieldWithPath("type").description("편의시설 카테고리"),
-                                                        fieldWithPath("address").description("편의시설 주소"),
-                                                        fieldWithPath("detailLocation").description("편의시설 위치 상세 설명"),
-                                                        fieldWithPath("imageUrl").description("편의시설 이미지 링크"),
-                                                        fieldWithPath("additional").description("추가 정보"),
-                                                        fieldWithPath("additional.phoneNumber").description("관리자 전화번호"),
-                                                        fieldWithPath("additional.operator").description("운영 기관"),
-                                                        fieldWithPath("additional.weekdayOpeningHours").description("평일 운영시간"),
-                                                        fieldWithPath("additional.weekendOpeningHours").description("주말 운영시간"),
-                                                        fieldWithPath("additional.route").description("(엘리베이터, 휠체어리프트) 운행 구간"),
-                                                        fieldWithPath("additional.turnstile").description("(지하철 장애인화장실) 개찰구 내부/외부"),
-                                                        fieldWithPath("additional.facilityType").description("(장애인 복지시설) 복지시설 종류"),
-                                                        fieldWithPath("additional.operatingType").description("(주차장) 운영 구분"),
-                                                        fieldWithPath("additional.capacity").description("(주차장) 총 주차면수"),
-                                                        fieldWithPath("additional.fee").description("(주차장) 유료/무료 구분"),
-                                                        fieldWithPath("additional.subscription").description("(주차장) 월 정기권 금액"),
-                                                        fieldWithPath("additional.standardFee").description("(주차장) 기본 주차요금"),
-                                                        fieldWithPath("additional.additionalFee").description("(주차장) 추가 요금")
+                                                        fieldWithPath("name").description("주차장 이름"),
+                                                        fieldWithPath("category").description("편의시설 카테고리"),
+                                                        fieldWithPath("address").description("주차장 주소"),
+                                                        fieldWithPath("detailInfo").description("상세 정보"),
+                                                        fieldWithPath("detailInfo.operatingType").description("운영 구분 (ex.시간제 주차장)"),
+                                                        fieldWithPath("detailInfo.phoneNumber").description("관리자 전화번호"),
+                                                        fieldWithPath("detailInfo.capacity").description("총 주차면수"),
+                                                        fieldWithPath("detailInfo.accessible").description("장애인전용 주차구역 유무"),
+                                                        fieldWithPath("detailInfo.free").description("유료/무료 구분"),
+                                                        fieldWithPath("detailInfo.weekdayOpeningHours").description("평일 운영시간"),
+                                                        fieldWithPath("detailInfo.weekendOpeningHours").description("주말 운영시간"),
+                                                        fieldWithPath("detailInfo.subscription").description("월 정기권 금액"),
+                                                        fieldWithPath("detailInfo.standardFee").description("기본 주차요금"),
+                                                        fieldWithPath("detailInfo.additionalFee").description("추가 요금"),
+                                                        fieldWithPath("imageUrl").description("주차장 이미지 주소")
                                                 )
-                                                .responseSchema(Schema.schema("FacilityDetailResponse"))
+                                                .responseSchema(Schema.schema("ParkingLotDetailResponse"))
+                                                .build()
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("전동휠체어 충전소 상세 조회")
+    void findCharger() throws Exception {
+        //given
+        when(facilityService.findFacility(anyLong()))
+                .thenReturn(new FacilityDetailResponse(
+                        "서울숲공원 커뮤니티센터 전동휠체어 급속충전기",
+                        FacilityType.WHEELCHAIR_CHARGER,
+                        "서울특별시 성동구 뚝섬로 273",
+                        Map.ofEntries(
+                                Map.entry("detailLocation",""),
+                                Map.entry("phoneNumber",""),
+                                Map.entry("weekdayOpeningHours",""),
+                                Map.entry("weekendOpeningHours","")
+                        ),
+                        "mobby/images/charger.png"
+                ));
+
+        //then
+        mockMvc.perform(
+                        RestDocumentationRequestBuilders.get(DEFAULT_URL+"/{facilityId}", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(
+                        MockMvcRestDocumentationWrapper.document(
+                                "{class-name}/{method-name}",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                resource(
+                                        ResourceSnippetParameters.builder()
+                                                .tag("편의시설 API")
+                                                .description("편의시설 상세 조회 (충전소)")
+                                                .pathParameters(
+                                                        parameterWithName("facilityId").description("편의시설 id")
+                                                )
+                                                .responseFields(
+                                                        fieldWithPath("name").description("충전소 이름"),
+                                                        fieldWithPath("category").description("편의시설 카테고리"),
+                                                        fieldWithPath("address").description("충전소 주소"),
+                                                        fieldWithPath("detailInfo").description("상세 정보"),
+                                                        fieldWithPath("detailInfo.detailLocation").description("(일반,역)설치장소 상세설명"),
+                                                        fieldWithPath("detailInfo.phoneNumber").description("(일반)관리기관 전화번호"),
+                                                        fieldWithPath("detailInfo.weekdayOpeningHours").description("(일반)평일 운영시간"),
+                                                        fieldWithPath("detailInfo.weekendOpeningHours").description("(일반)주말 운영시간"),
+                                                        fieldWithPath("imageUrl").description("충전소 이미지 주소")
+                                                )
+                                                .responseSchema(Schema.schema("ChargerDetailResponse"))
+                                                .build()
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("화장실 상세 조회")
+    void findToilet() throws Exception {
+        //given
+        when(facilityService.findFacility(anyLong()))
+                .thenReturn(new FacilityDetailResponse(
+                        "서울숲코오롱디지털타워 개방화장실",
+                        FacilityType.TOILET,
+                        "서울특별시 성동구 성수일로4길 25, 서울숲코오롱디지털타워 (성수동2가)",
+                        Map.ofEntries(
+                                Map.entry("detailLocation",""),
+                                Map.entry("phoneNumber",""),
+                                Map.entry("openingHours",""),
+                                Map.entry("turnstile",""),
+                                Map.entry("accessible","")
+                        ),
+                        "mobby/images/toilet.png"
+                ));
+
+        //then
+        mockMvc.perform(
+                        RestDocumentationRequestBuilders.get(DEFAULT_URL+"/{facilityId}", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(
+                        MockMvcRestDocumentationWrapper.document(
+                                "{class-name}/{method-name}",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                resource(
+                                        ResourceSnippetParameters.builder()
+                                                .tag("편의시설 API")
+                                                .description("편의시설 상세 조회 (화장실)")
+                                                .pathParameters(
+                                                        parameterWithName("facilityId").description("편의시설 id")
+                                                )
+                                                .responseFields(
+                                                        fieldWithPath("name").description("화장실 이름"),
+                                                        fieldWithPath("category").description("편의시설 카테고리"),
+                                                        fieldWithPath("address").description("화장실 주소"),
+                                                        fieldWithPath("detailInfo").description("상세 정보"),
+                                                        fieldWithPath("detailInfo.accessible").description("(일반,역)장애인화장실 여부"),
+                                                        fieldWithPath("detailInfo.phoneNumber").description("(일반)관리기관 전화번호"),
+                                                        fieldWithPath("detailInfo.openingHours").description("(일반,역)운영시간"),
+                                                        fieldWithPath("detailInfo.detailLocation").description("(역)화장실 상세위치"),
+                                                        fieldWithPath("detailInfo.turnstile").description("(역)개찰구 안/밖"),
+                                                        fieldWithPath("imageUrl").description("화장실 이미지 주소")
+                                                )
+                                                .responseSchema(Schema.schema("ToiletDetailResponse"))
+                                                .build()
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("복지시설 상세 조회")
+    void findWelfareFacility() throws Exception {
+        //given
+        when(facilityService.findFacility(anyLong()))
+                .thenReturn(new FacilityDetailResponse(
+                        "성동재활의원",
+                        FacilityType.WELFARE_FACILITY,
+                        "서울특별시 성동구 뚝섬로1길 43, 1층 (성수동1가, 성수문화복지회관)",
+                        Map.ofEntries(
+                                Map.entry("type",""),
+                                Map.entry("phoneNumber","")
+                        ),
+                        "mobby/images/welfare_facility.png"
+                ));
+
+        //then
+        mockMvc.perform(
+                        RestDocumentationRequestBuilders.get(DEFAULT_URL+"/{facilityId}", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(
+                        MockMvcRestDocumentationWrapper.document(
+                                "{class-name}/{method-name}",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                resource(
+                                        ResourceSnippetParameters.builder()
+                                                .tag("편의시설 API")
+                                                .description("편의시설 상세 조회 (복지시설)")
+                                                .pathParameters(
+                                                        parameterWithName("facilityId").description("편의시설 id")
+                                                )
+                                                .responseFields(
+                                                        fieldWithPath("name").description("복지시설 이름"),
+                                                        fieldWithPath("category").description("편의시설 카테고리"),
+                                                        fieldWithPath("address").description("복지시설 주소"),
+                                                        fieldWithPath("detailInfo").description("상세 정보"),
+                                                        fieldWithPath("detailInfo.type").description("복지시설 종류"),
+                                                        fieldWithPath("detailInfo.phoneNumber").description("복지시설 전화번호"),
+                                                        fieldWithPath("imageUrl").description("복지시설 이미지 주소")
+                                                )
+                                                .responseSchema(Schema.schema("WelfareFacilityDetailResponse"))
                                                 .build()
                                 )
                         )
