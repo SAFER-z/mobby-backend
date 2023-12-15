@@ -1,6 +1,5 @@
 package com.safer.safer.batch.tasklet.stationFacility;
 
-import com.safer.safer.batch.util.BatchConstant;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.stationFacility.StationDto;
 import com.safer.safer.station.domain.Station;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Component;
 ;
 import java.util.List;
 
+import static com.safer.safer.batch.util.BatchConstant.UTF_8;
+
 @Component
 @RequiredArgsConstructor
 public class StationTasklet implements Tasklet {
@@ -23,8 +24,8 @@ public class StationTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String filePath = new ClassPathResource("data/station.csv").getURI().getPath();
-        List<StationDto> items = CsvUtil.readCsv(filePath, BatchConstant.UTF_8, StationDto.class);
+        String filePath = new ClassPathResource("data/new_station.csv").getURI().getPath();
+        List<StationDto> items = CsvUtil.readCsv(filePath,UTF_8, StationDto.class);
 
         List<Station> stations = items.stream()
                 .map(StationDto::toEntity)

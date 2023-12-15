@@ -42,7 +42,7 @@ public class FacilityService {
         if(FacilityType.isNotValidType(category))
             throw new NoSuchElementException(NO_SUCH_FACILITY_TYPE, category);
 
-        return FacilitiesResponse.of(facilityRepository.findAllByDistanceAndType(userCoordinate, category).stream()
+        return FacilitiesResponse.of(facilityRepository.findAllByDistanceAndCategory(userCoordinate, category).stream()
                 .map(FacilityResponse::from)
                 .toList());
     }

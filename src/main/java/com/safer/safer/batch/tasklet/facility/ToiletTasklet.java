@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.safer.safer.batch.util.BatchConstant.EUC_KR;
+import static com.safer.safer.batch.util.BatchConstant.UTF_8;
 
 @Component
 @RequiredArgsConstructor
@@ -24,8 +24,8 @@ public class ToiletTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String filePath = new ClassPathResource("data/toilet.csv").getURI().getPath();
-        List<ToiletDto> items = CsvUtil.readCsv(filePath, EUC_KR, ToiletDto.class);
+        String filePath = new ClassPathResource("data/new_toilet.csv").getURI().getPath();
+        List<ToiletDto> items = CsvUtil.readCsv(filePath, UTF_8, ToiletDto.class);
 
         List<Facility> toilets = items.stream()
                 .map(ToiletDto::toEntity)

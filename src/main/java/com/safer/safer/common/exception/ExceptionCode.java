@@ -14,6 +14,7 @@ public enum ExceptionCode {
     FILE_NOT_FOUND("해당 파일을 읽을 수 없습니다: ", HttpStatus.INTERNAL_SERVER_ERROR),
 
     NO_SUCH_FACILITY_TYPE("편의시설 종류를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    NO_SUCH_OPERATOR_TYPE("역 종류를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     NO_SUCH_STATION("역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NO_SUCH_FACILITY("편의시설을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 

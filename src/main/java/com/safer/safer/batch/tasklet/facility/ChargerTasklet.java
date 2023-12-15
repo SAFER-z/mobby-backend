@@ -1,6 +1,5 @@
 package com.safer.safer.batch.tasklet.facility;
 
-import com.safer.safer.batch.util.BatchConstant;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.facility.ChargerDto;
 import com.safer.safer.facility.domain.Facility;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.safer.safer.batch.util.BatchConstant.EUC_KR;
+
 @Component
 @RequiredArgsConstructor
 public class ChargerTasklet implements Tasklet {
@@ -24,7 +25,7 @@ public class ChargerTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception{
         String filePath = new ClassPathResource("data/charger.csv").getURI().getPath();
-        List<ChargerDto> items = CsvUtil.readCsv(filePath, BatchConstant.EUC_KR, ChargerDto.class);
+        List<ChargerDto> items = CsvUtil.readCsv(filePath, EUC_KR, ChargerDto.class);
 
         List<Facility> chargers = items.stream()
                 .map(ChargerDto::toEntity)

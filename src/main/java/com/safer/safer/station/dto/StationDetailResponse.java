@@ -1,7 +1,6 @@
 package com.safer.safer.station.dto;
 
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.FacilityType;
 import com.safer.safer.facility.dto.FacilityDetailResponse;
 import com.safer.safer.station.domain.Station;
 
@@ -10,31 +9,27 @@ import java.util.Set;
 
 public record StationDetailResponse(
         String name,
-        String address,
         String line,
+        String address,
         String operator,
+        String phoneNumber,
         String imageUrl,
-        boolean hasLift,
-        boolean hasToilet,
-        boolean hasRamp,
-        boolean hasElevator,
-        boolean hasCharger,
+        boolean hasAccessibleRamp,
+        String accessibleArea,
         List<FacilityDetailResponse> facilities
 ) {
     public static StationDetailResponse from(Station station) {
         Set<Facility> facilities = station.getFacilities();
 
         return new StationDetailResponse(
-                station.getName(),
+                station.getStationKey().getName(),
+                station.getStationKey().getLine(),
                 station.getAddress(),
-                station.getLine(),
-                station.getOperator(),
+                station.getStationKey().getOperator(),
+                station.getPhoneNumber(),
                 station.getImageUrl(),
-                facilities.stream().anyMatch(facility -> facility.getType().equals(FacilityType.WHEELCHAIR_LIFT)),
-                facilities.stream().anyMatch(facility -> facility.getType().equals(FacilityType.ACCESSIBLE_TOILET)),
-                facilities.stream().anyMatch(facility -> facility.getType().equals(FacilityType.ACCESSIBLE_RAMP)),
-                facilities.stream().anyMatch(facility -> facility.getType().equals(FacilityType.ELEVATOR)),
-                facilities.stream().anyMatch(facility -> facility.getType().equals(FacilityType.WHEELCHAIR_CHARGER)),
+                station.isRampAvailable(),
+                station.getAccessibleArea(),
                 facilities.stream()
                         .map(FacilityDetailResponse::from)
                         .toList()

@@ -1,12 +1,12 @@
 package com.safer.safer.batch.tasklet.stationFacility;
 
-import com.safer.safer.batch.dto.stationFacility.KorailToiletDto;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.stationFacility.StationToiletDto;
 import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.common.exception.NoSuchElementException;
 import com.safer.safer.facility.domain.repository.FacilityRepository;
+import com.safer.safer.station.domain.StationKey;
 import com.safer.safer.station.domain.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
@@ -31,27 +31,18 @@ public class StationToiletTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String filePath = new ClassPathResource("data/station_toilet.csv").getURI().getPath();
-        String korailFilePath = new ClassPathResource("data/korail_toilet.csv").getURI().getPath();
+        String filePath = new ClassPathResource("data/new_station_toilet.csv").getURI().getPath();
 
-        List<StationToiletDto> items = CsvUtil.readCsv(filePath, EUC_KR, StationToiletDto.class);
-        List<KorailToiletDto> korailItems = CsvUtil.readCsv(korailFilePath, EUC_KR, KorailToiletDto.class);
+        List<StationToiletDto> items = CsvUtil.readCsv(filePath, UTF_8, StationToiletDto.class);
         List<Facility> toilets = new ArrayList<>();
 
         items.forEach(toilet -> {
             String stationName = CsvUtil.parseStationName(toilet.getStationName());
-            String line = CsvUtil.parseLine(toilet.getLine());
+            String line = toilet.getLine();
+            String operator = toilet.getOperatorType();
+            StationKey stationKey = StationKey.of(stationName, line, operator);
 
-            Station station = stationRepository.findByNameAndLine(stationName, line)
-                    .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName));
-
-            toilets.add(toilet.toEntity(station));
-        });
-        korailItems.forEach(toilet -> {
-            String stationName = CsvUtil.parseStationName(toilet.getStationName());
-            String line = CsvUtil.parseLine(toilet.getLine());
-
-            Station station = stationRepository.findByNameAndLine(stationName, line)
+            Station station = stationRepository.findByStationKey(stationKey)
                     .orElseThrow(() -> new NoSuchElementException(NO_SUCH_STATION, stationName));
 
             toilets.add(toilet.toEntity(station));
