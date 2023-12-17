@@ -3,7 +3,7 @@ package com.safer.safer.batch.tasklet.facility;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.facility.ToiletDto;
 import com.safer.safer.facility.domain.Facility;
-import com.safer.safer.facility.domain.repository.FacilityRepository;
+import com.safer.safer.facility.domain.repository.CustomFacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -20,7 +20,7 @@ import static com.safer.safer.batch.util.BatchConstant.UTF_8;
 @RequiredArgsConstructor
 public class ToiletTasklet implements Tasklet {
 
-    private final FacilityRepository facilityRepository;
+    private final CustomFacilityRepository facilityRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {

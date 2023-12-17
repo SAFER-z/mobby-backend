@@ -3,7 +3,7 @@ package com.safer.safer.batch.tasklet.stationFacility;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.stationFacility.StationDto;
 import com.safer.safer.station.domain.Station;
-import com.safer.safer.station.domain.repository.StationRepository;
+import com.safer.safer.station.domain.repository.CustomStationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -20,7 +20,7 @@ import static com.safer.safer.batch.util.BatchConstant.UTF_8;
 @RequiredArgsConstructor
 public class StationTasklet implements Tasklet {
 
-    private final StationRepository stationRepository;
+    private final CustomStationRepository stationRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {

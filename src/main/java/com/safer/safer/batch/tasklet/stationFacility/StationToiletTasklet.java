@@ -3,9 +3,9 @@ package com.safer.safer.batch.tasklet.stationFacility;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.stationFacility.StationToiletDto;
 import com.safer.safer.facility.domain.Facility;
+import com.safer.safer.facility.domain.repository.CustomFacilityRepository;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.common.exception.NoSuchElementException;
-import com.safer.safer.facility.domain.repository.FacilityRepository;
 import com.safer.safer.station.domain.StationKey;
 import com.safer.safer.station.domain.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_STATION;
 public class StationToiletTasklet implements Tasklet {
 
     private final StationRepository stationRepository;
-    private final FacilityRepository facilityRepository;
+    private final CustomFacilityRepository facilityRepository;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
