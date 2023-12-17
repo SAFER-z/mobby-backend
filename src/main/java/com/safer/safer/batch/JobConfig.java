@@ -2,7 +2,8 @@ package com.safer.safer.batch;
 
 import com.safer.safer.batch.tasklet.facility.*;
 import com.safer.safer.batch.tasklet.stationFacility.*;
-import com.safer.safer.facility.domain.repository.FacilityRepository;
+import com.safer.safer.facility.domain.repository.CustomFacilityRepository;
+import com.safer.safer.station.domain.repository.CustomStationRepository;
 import com.safer.safer.station.domain.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -23,37 +24,73 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 public class JobConfig {
 
-    private final FacilityRepository facilityRepository;
+    private final CustomFacilityRepository facilityRepository;
     private final StationRepository stationRepository;
+    private final CustomStationRepository customStationRepository;
 
     @Bean
-    public Job csvJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new JobBuilder("csvJob", jobRepository)
-                .start(stationStep(jobRepository, transactionManager))
-                .next(stationChargerStep(jobRepository, transactionManager))
-                .next(stationElevatorStep(jobRepository, transactionManager))
-                .next(stationRampStep(jobRepository, transactionManager))
-                .next(stationLiftStep(jobRepository, transactionManager))
-                .next(stationToiletStep(jobRepository, transactionManager))
+    public Job insertionJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new JobBuilder("insertionJob", jobRepository)
+                .start(splitFlow(jobRepository, transactionManager))
+                .build()
+                .build();
+    }
+
+    @Bean
+    public Flow splitFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("splitFlow")
+                .split(taskExecutor())
+                .add(stationFlow(jobRepository, transactionManager), facilityFlow(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow facilityFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("facilityFlow")
+                .start(toiletStep(jobRepository, transactionManager))
                 .next(welfareFacilityStep(jobRepository, transactionManager))
                 .next(chargerStep(jobRepository, transactionManager))
-                .next(toiletStep(jobRepository, transactionManager))
                 .next(parkingLotStep(jobRepository, transactionManager))
                 .build();
     }
-//
-//    @Bean
-//    public Flow splitFlow() {
-//        return new FlowBuilder<SimpleFlow>("splitFlow")
-//                .split(taskExecutor())
-//    }
 
+    @Bean
+    public Flow stationFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationFlow")
+                .start(stationStep(jobRepository, transactionManager))
+                .next(stationDependentFlow(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow stationDependentFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationDependentFlow")
+                .split(taskExecutor())
+                .add(stationElevatorFlow(jobRepository, transactionManager), stationFacilityFlow(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow stationElevatorFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationElevatorFlow")
+                .start(stationElevatorStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow stationFacilityFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationFacilityFlow")
+                .start(stationChargerStep(jobRepository, transactionManager))
+                .next(stationRampStep(jobRepository, transactionManager))
+                .next(stationLiftStep(jobRepository, transactionManager))
+                .next(stationToiletStep(jobRepository, transactionManager))
+                .build();
+    }
 
     @Bean
     public Step stationStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("stationStep", jobRepository)
-                .tasklet(new StationTasklet(stationRepository), transactionManager)
-                .allowStartIfComplete(true)
+                .tasklet(new StationTasklet(customStationRepository), transactionManager)
                 .build();
     }
 

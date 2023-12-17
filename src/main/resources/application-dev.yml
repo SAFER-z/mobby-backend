@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_PATH}
+    url: ${DB_PATH}?rewriteBatchedStatements=true
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
