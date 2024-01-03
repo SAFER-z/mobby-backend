@@ -1,6 +1,7 @@
 package com.safer.safer.facility.presentation;
 
 import com.safer.safer.facility.dto.CoordinateRequest;
+import com.safer.safer.facility.dto.FacilitiesDistanceResponse;
 import com.safer.safer.facility.dto.FacilitiesResponse;
 import com.safer.safer.facility.dto.FacilityDetailResponse;
 import com.safer.safer.facility.application.FacilityService;
@@ -24,6 +25,16 @@ public class FacilityController {
             @RequestParam("lat") double latitude,
             @RequestParam("lon") double longitude,
             @RequestParam(required = false) String category
+    ) {
+        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
+        return ResponseEntity.ok(facilityService.findFacilitiesWithin(coordinate, category));
+    }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<FacilitiesDistanceResponse> findAllSortedByDistance(
+            @RequestParam("lat") double latitude,
+            @RequestParam("lon") double longitude,
+            @RequestParam("category") String category
     ) {
         CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
         return ResponseEntity.ok(facilityService.findFacilitiesByDistance(coordinate, category));
