@@ -31,12 +31,12 @@ public class FacilityController {
     }
 
     @GetMapping("/sorted")
-    public ResponseEntity<FacilitiesDistanceResponse> findAllSortedByDistance(
+    public ResponseEntity<FacilitiesDistanceResponse> findAllWithDistance(
             @RequestParam("lat") double latitude,
             @RequestParam("lon") double longitude,
             @RequestParam("category") String category
     ) {
         CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
-        return ResponseEntity.ok(facilityService.findFacilitiesByDistance(coordinate, category));
+        return ResponseEntity.ok(facilityService.findFacilitiesWithDistance(coordinate, category));
     }
 }

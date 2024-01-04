@@ -44,11 +44,19 @@ public class FacilityService {
                 .toList());
     }
 
-    public FacilitiesDistanceResponse findFacilitiesByDistance(CoordinateRequest coordinate, String category) {
+    public FacilitiesDistanceResponse findFacilitiesWithDistance(CoordinateRequest coordinate, String category) {
         Point userCoordinate = coordinate.toPoint();
 
         return FacilitiesDistanceResponse.of(
-                facilityRepository.findFacilitiesByDistance(userCoordinate, category)
+                facilityRepository.findFacilitiesWithDistance(userCoordinate, category)
+        );
+    }
+
+    public FacilitiesDistanceResponse searchFacilities(String query, CoordinateRequest coordinate) {
+        Point userCoordinate = coordinate.toPoint();
+
+        return FacilitiesDistanceResponse.of(
+                facilityRepository.findSearchResult(query, userCoordinate)
         );
     }
 }
