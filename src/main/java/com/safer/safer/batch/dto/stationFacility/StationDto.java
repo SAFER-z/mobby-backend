@@ -3,7 +3,7 @@ package com.safer.safer.batch.dto.stationFacility;
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.GeometryUtil;
-import com.safer.safer.common.infrastructure.tmap.TMapUtil;
+import com.safer.safer.common.infrastructure.tmap.TMapRequester;
 import com.safer.safer.station.domain.OperatorType;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.station.domain.StationKey;
@@ -36,7 +36,7 @@ public class StationDto {
         OperatorType operatorType = OperatorType.from(operator);
         String stationName = CsvUtil.parseStationName(name);
 
-        Point coordinate = latitude.isBlank() ? TMapUtil.findPointByKeyword(operatorType.getTMapKeyword(stationName, line)) :
+        Point coordinate = latitude.isBlank() ? TMapRequester.findPointByKeyword(operatorType.getTMapKeyword(stationName, line)) :
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
 
         return Station.of(
