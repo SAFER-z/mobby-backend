@@ -26,8 +26,10 @@ public enum ExceptionCode {
 
     INVALID_REQUEST("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST),
     INVALID_ACCESS_TOKEN("올바르지 않은 형식의 AccessToken입니다.", HttpStatus.BAD_REQUEST),
-    EXPIRED_ACCESS_TOKEN("AccessToken의 기한이 만료되었습니다.", HttpStatus.UNAUTHORIZED);
+    EXPIRED_ACCESS_TOKEN("AccessToken의 기한이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
 
+    FAIL_TO_REQUEST_JUSO("도로명주소 API 요청에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_JUSO_REQUEST("올바르지 않은 요청입니다: ", HttpStatus.BAD_REQUEST);
 
 
     private final String message;

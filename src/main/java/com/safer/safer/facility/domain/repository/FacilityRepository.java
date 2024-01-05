@@ -25,7 +25,7 @@ public interface FacilityRepository extends JpaRepository<Facility,Long> {
     List<FacilityDistanceResponse> findFacilitiesWithDistance(@Param("coordinate") Point coordinate, @Param("category") String category);
 
     @Query(value = "select f.id, f.name, f.address, f.category, round(ST_DistanceSphere(f.coordinate, :coordinate)) as distance " +
-            "from Facility f where f.name like concat('%',:query,'%') and f.address like concat('%',:query,'%') " +
+            "from Facility f where f.name like concat('%',:query,'%') or f.address like concat('%',:query,'%') " +
             "limit 10", nativeQuery = true)
     List<FacilityDistanceResponse> findSearchResult(@Param("query") String query, @Param("coordinate") Point coordinate);
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_FACILITY;
 import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_FACILITY_TYPE;
 
@@ -52,11 +54,9 @@ public class FacilityService {
         );
     }
 
-    public FacilitiesDistanceResponse searchFacilities(String query, CoordinateRequest coordinate) {
+    public List<FacilityDistanceResponse> searchFacilities(String query, CoordinateRequest coordinate) {
         Point userCoordinate = coordinate.toPoint();
 
-        return FacilitiesDistanceResponse.of(
-                facilityRepository.findSearchResult(query, userCoordinate)
-        );
+        return facilityRepository.findSearchResult(query, userCoordinate);
     }
 }
