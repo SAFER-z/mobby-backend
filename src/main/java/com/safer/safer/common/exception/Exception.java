@@ -20,8 +20,8 @@ public class Exception extends RuntimeException {
         this.status = exceptionCode.getStatus();
     }
 
-    public Exception(final ExceptionCode exceptionCode, final String element) {
-        super(exceptionCode.getMessage().concat(" ("+element+")"));
+    public Exception(final ExceptionCode exceptionCode, final String message) {
+        super(exceptionCode.getMessage().concat(message));
         this.status = exceptionCode.getStatus();
     }
 }

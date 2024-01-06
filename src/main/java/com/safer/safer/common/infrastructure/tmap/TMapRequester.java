@@ -17,7 +17,7 @@ import java.util.Objects;
 import static com.safer.safer.common.exception.ExceptionCode.FAIL_TO_REQUEST_TMAP_API;
 
 @Component
-public class TMapUtil {
+public class TMapRequester {
 
     private static String appKey;
 
@@ -32,7 +32,7 @@ public class TMapUtil {
 
         RequestEntity<Void> request = RequestEntity
                 .get(uri)
-                .header("appKey", TMapUtil.appKey)
+                .header("appKey", TMapRequester.appKey)
                 .build();
 
         ResponseEntity<String> response = restTemplate.exchange(request, String.class);

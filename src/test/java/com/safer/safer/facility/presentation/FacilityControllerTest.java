@@ -14,9 +14,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.safer.safer.common.ControllerTest;
 import com.safer.safer.facility.domain.FacilityType;
-import com.safer.safer.facility.dto.FacilitiesResponse;
-import com.safer.safer.facility.dto.FacilityDetailResponse;
-import com.safer.safer.facility.dto.FacilityResponse;
+import com.safer.safer.facility.dto.*;
 import com.safer.safer.facility.application.FacilityService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +39,7 @@ public class FacilityControllerTest extends ControllerTest {
     @DisplayName("1.5km 반경 내 편의시설 조회")
     void findFacilitiesByDistanceAndCategory() throws Exception {
         //given
-        when(facilityService.findFacilitiesByDistance(coordinate, "PARKING_LOT"))
+        when(facilityService.findFacilitiesWithin(coordinate, "PARKING_LOT"))
                 .thenReturn(FacilitiesResponse.of(
                         List.of(new FacilityResponse(
                                 1L,
@@ -318,6 +316,60 @@ public class FacilityControllerTest extends ControllerTest {
                                                         fieldWithPath("imageUrl").description("복지시설 이미지 주소")
                                                 )
                                                 .responseSchema(Schema.schema("WelfareFacilityDetailResponse"))
+                                                .build()
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("1.5km 반경 내 편의시설 거리순 조회")
+    void findFacilitiesByCategoryWithDistance() throws Exception {
+        //given
+        when(facilityService.findFacilitiesWithDistance(coordinate, "PARKING_LOT"))
+                .thenReturn(FacilitiesDistanceResponse.of(
+                        List.of(new FacilityDistanceResponse() {
+                            public Long getId() {return 1L;}
+                            public String getName() {return "강변 공영주차장";}
+                            public String getAddress() {return "서울특별시 성동구 둘레길 47-5 (성수동1가)";}
+                            public FacilityType getCategory() {return FacilityType.PARKING_LOT;}
+                            public double getDistance() {return 100;}
+                        }))
+                );
+        //then
+        mockMvc.perform(
+                        RestDocumentationRequestBuilders.get(DEFAULT_URL+"/sorted")
+                                .param("lat", "37.5448467")
+                                .param("lon", "127.0392661")
+                                .param("category", "PARKING_LOT")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(
+                        MockMvcRestDocumentationWrapper.document(
+                                "{class-name}/{method-name}",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                resource(
+                                        ResourceSnippetParameters.builder()
+                                                .tag("편의시설 API")
+                                                .summary("편의시설 거리순 조회")
+                                                .description("1.5km 반경 내 편의시설 카테고리 별 조회")
+                                                .queryParameters(
+                                                        parameterWithName("lat").description("사용자 현재 위도"),
+                                                        parameterWithName("lon").description("사용자 현재 경도"),
+                                                        parameterWithName("category").optional().description("편의시설 카테고리")
+                                                )
+                                                .responseFields(
+                                                        fieldWithPath("facilities").description("편의시설 정보 목록"),
+                                                        fieldWithPath("facilities[].id").description("편의시설 id"),
+                                                        fieldWithPath("facilities[].name").description("편의시설 이름"),
+                                                        fieldWithPath("facilities[].address").description("편의시설 주소"),
+                                                        fieldWithPath("facilities[].category").description("편의시설 종류"),
+                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 거리(미터)")
+                                                )
+                                                .responseSchema(Schema.schema("FacilitiesDistanceResponse"))
                                                 .build()
                                 )
                         )

@@ -7,6 +7,7 @@ import com.safer.safer.batch.exception.TMapException;
 import com.safer.safer.common.exception.ExceptionResponse;
 import com.safer.safer.common.exception.Exception;
 import com.safer.safer.common.exception.NoSuchElementException;
+import com.safer.safer.routing.exception.AddressException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler({FileIOException.class, TMapException.class})
+    @ExceptionHandler(FileIOException.class)
     public ResponseEntity<ExceptionResponse> dataInputExceptionHandler(final Exception exception) {
         logDebug(exception);
         return ResponseEntity
@@ -24,7 +25,15 @@ public class ControllerAdvice {
                 .body(ExceptionResponse.from(exception));
     }
 
-    @ExceptionHandler({NoSuchElementException.class, OAuthException.class, AuthException.class})
+    @ExceptionHandler({TMapException.class, OAuthException.class, AuthException.class, AddressException.class})
+    public ResponseEntity<ExceptionResponse> restTemplateExceptionHandler(final Exception exception) {
+        logWarn(exception);
+        return ResponseEntity
+                .status(exception.getStatus())
+                .body(ExceptionResponse.from(exception));
+    }
+
+    @ExceptionHandler({NoSuchElementException.class})
     public ResponseEntity<ExceptionResponse> noSuchElementExceptionHandler(final Exception exception) {
         logWarn(exception);
         return ResponseEntity

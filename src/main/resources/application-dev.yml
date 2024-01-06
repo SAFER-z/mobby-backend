@@ -50,3 +50,4 @@ springdoc:
     path: /docs
 
 appKey: ${TMAP_APP_KEY}
+confirmKey: ${JUSO_API_KEY}

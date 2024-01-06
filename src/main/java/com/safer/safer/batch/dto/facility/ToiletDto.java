@@ -3,7 +3,7 @@ package com.safer.safer.batch.dto.facility;
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.GeometryUtil;
-import com.safer.safer.common.infrastructure.tmap.TMapUtil;
+import com.safer.safer.common.infrastructure.tmap.TMapRequester;
 import com.safer.safer.facility.domain.Facility;
 import org.locationtech.jts.geom.Point;
 
@@ -36,7 +36,7 @@ public class ToiletDto {
     private String longitude;
 
     public Facility toEntity() {
-        Point coordinate = latitude.isBlank() ? TMapUtil.findPointByKeyword(address) :
+        Point coordinate = latitude.isBlank() ? TMapRequester.findPointByKeyword(address) :
                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
 
         return Facility.of(
