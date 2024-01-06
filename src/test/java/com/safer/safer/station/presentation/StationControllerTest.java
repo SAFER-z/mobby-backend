@@ -42,7 +42,7 @@ public class StationControllerTest extends ControllerTest {
     @DisplayName("1.5km 반경 내 역 전체 조회")
     void findStationsByDistance() throws Exception {
         //given
-        when(stationService.findStationsByDistance(coordinate))
+        when(stationService.findStationsWithin(coordinate))
                 .thenReturn(StationsResponse.of(
                         List.of(new StationResponse(
                                 1L,

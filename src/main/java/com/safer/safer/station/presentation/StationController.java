@@ -25,6 +25,6 @@ public class StationController {
             @RequestParam("lon") double longitude
     ) {
         CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
-        return ResponseEntity.ok(stationService.findStationsByDistance(coordinate));
+        return ResponseEntity.ok(stationService.findStationsWithin(coordinate));
     }
 }
