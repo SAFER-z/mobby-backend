@@ -19,7 +19,7 @@ public interface StationRepository extends JpaRepository<Station,Long> {
     @Query(value = "select * from Station s where ST_Dwithin(s.coordinate, :coordinate, 1500, false)", nativeQuery = true)
     List<Station> findStationsWithin(@Param("coordinate") Point coordinate);
 
-    @Query(value = "select s.id, s.name, s.address, s.line, round(ST_DistanceSphere(s.coordinate, :coordinate)) as distance " +
+    @Query(value = "select s.id, s.name, s.address, s.line, round(cast(ST_DistanceSphere(s.coordinate, :coordinate) as decimal), 1) as distance " +
             "from Station s where s.name like concat('%',:query,'%') or s.address like concat('%',:query,'%') or s.line like concat('%',:query,'%')" +
             "limit 5", nativeQuery = true)
     List<StationDistanceResponse> findSearchResult(@Param("query") String query, @Param("coordinate") Point coordinate);
