@@ -64,5 +64,9 @@ cloud:
     stack:
       auto: false
 
+webhook:
+  slack:
+    url: ${WEBHOOK_SLACK_URL}
+
 appKey: ${TMAP_APP_KEY}
 confirmKey: ${JUSO_API_KEY}

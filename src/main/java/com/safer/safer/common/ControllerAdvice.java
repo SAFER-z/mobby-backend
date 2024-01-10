@@ -13,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
+
+import static com.safer.safer.common.exception.ExceptionCode.FAIL_TO_SEND_MESSAGE;
+
 @Slf4j
 @RestControllerAdvice
 public class ControllerAdvice {
@@ -33,12 +37,19 @@ public class ControllerAdvice {
                 .body(ExceptionResponse.from(exception));
     }
 
-    @ExceptionHandler({NoSuchElementException.class})
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ExceptionResponse> noSuchElementExceptionHandler(final Exception exception) {
         logWarn(exception);
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(ExceptionResponse.from(exception));
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ExceptionResponse> slackExceptionHandler() {
+        return ResponseEntity
+                .status(FAIL_TO_SEND_MESSAGE.getStatus())
+                .body(ExceptionResponse.of(FAIL_TO_SEND_MESSAGE.getMessage()));
     }
 
     private void logDebug(Exception exception) {
