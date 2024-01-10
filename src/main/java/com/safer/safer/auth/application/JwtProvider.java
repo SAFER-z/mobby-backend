@@ -4,48 +4,49 @@ import com.safer.safer.auth.dto.UserTokens;
 import com.safer.safer.auth.exception.JwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 import static com.safer.safer.common.exception.ExceptionCode.EXPIRED_ACCESS_TOKEN;
 import static com.safer.safer.common.exception.ExceptionCode.INVALID_ACCESS_TOKEN;
 
+@RequiredArgsConstructor
 @Component
 public class JwtProvider {
 
-    private final SecretKey secretKey;
-    private final Long accessTokenExpirationTime;
-    private final Long refreshTokenExpirationTime;
+    @Value("${jwt.secret}")
+    private String secretKey;
+    private Key key;
+    private final static long accessTokenValidTime = (60 * 1000) * 30;
+    private final static long refreshTokenValidTime = (60 * 1000) * 60 * 24 * 7;
 
-    public JwtProvider(
-            @Value("${jwt.secret-key}") String secretKey,
-            @Value("${jwt.access-token-expiration-time}") Long accessTokenExpirationTime,
-            @Value("${jwt.refresh-token-expiration-time}") Long refreshTokenExpirationTime
-    ) {
-        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        this.accessTokenExpirationTime = accessTokenExpirationTime;
-        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+    @PostConstruct
+    protected void init() {
+        String encodedKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        key= Keys.hmacShaKeyFor(encodedKey.getBytes());
     }
 
     public UserTokens createTokens(final String subject) {
-        String accessToken = createToken(subject, accessTokenExpirationTime);
-        String refreshToken = createToken("", refreshTokenExpirationTime);
+        String accessToken = createToken(subject, accessTokenValidTime);
+        String refreshToken = createToken("", refreshTokenValidTime);
         return UserTokens.of(accessToken, refreshToken);
     }
 
     private String createToken(final String subject, Long expirationTime) {
         Date now = new Date();
-        Date until = new Date(now.getTime() + expirationTime);
+        Date expiration = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(now)
-                .setExpiration(until)
-                .signWith(secretKey, SignatureAlgorithm.HS512)
+                .setExpiration(expiration)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -67,7 +68,7 @@ public class JwtProvider {
 
     private Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token);
     }
