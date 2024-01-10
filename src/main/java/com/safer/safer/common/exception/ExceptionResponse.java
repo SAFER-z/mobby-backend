@@ -6,4 +6,8 @@ public record ExceptionResponse(
     public static ExceptionResponse from(final Exception exception) {
         return new ExceptionResponse(exception.getMessage());
     }
+
+    public static ExceptionResponse of(String message) {
+        return new ExceptionResponse(message);
+    }
 }
