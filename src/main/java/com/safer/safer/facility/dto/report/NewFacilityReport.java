@@ -20,6 +20,18 @@ public class NewFacilityReport implements FacilityReport {
     private static final String TITLE = " 님으로부터 편의시설 생성 제보를 받았습니다: ";
     private static final String GREEN = "#07DB00";
 
+    public static NewFacilityReport from(FacilityRequest facilityRequest, String imageUrl) {
+        return new NewFacilityReport(
+                facilityRequest.name(),
+                facilityRequest.address(),
+                facilityRequest.category(),
+                facilityRequest.detailInfo(),
+                imageUrl,
+                facilityRequest.latitude(),
+                facilityRequest.longitude()
+        );
+    }
+
     @Override
     public String getTitle(String userName) {
         return userName + TITLE;

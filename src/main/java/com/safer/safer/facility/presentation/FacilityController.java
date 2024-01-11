@@ -5,7 +5,7 @@ import com.safer.safer.auth.presentation.Auth;
 import com.safer.safer.facility.application.FacilityReportService;
 import com.safer.safer.facility.dto.*;
 import com.safer.safer.facility.application.FacilityService;
-import com.safer.safer.facility.dto.report.NewFacilityRequest;
+import com.safer.safer.facility.dto.report.FacilityRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,11 +47,22 @@ public class FacilityController {
 
     @PostMapping
     public ResponseEntity<Void> reportFacility(
-            @RequestPart(value = "facilityRequest") NewFacilityRequest newFacilityRequest,
+            @RequestPart(value = "facilityRequest") FacilityRequest facilityRequest,
             @RequestPart(value = "imageFile") MultipartFile multipartFile,
             @Auth UserInfo userInfo
     ) throws IOException {
-        facilityReportService.saveFacilityReport(newFacilityRequest, multipartFile, userInfo);
+        facilityReportService.reportFacility(facilityRequest, multipartFile, userInfo);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{facilityId}")
+    public ResponseEntity<Void> reportFacilityUpdate(
+            @PathVariable final Long facilityId,
+            @RequestPart(value = "facilityRequest") FacilityRequest facilityRequest,
+            @RequestPart(value = "imageFile") MultipartFile multipartFile,
+            @Auth UserInfo userInfo
+    ) throws IOException {
+        facilityReportService.reportFacilityUpdate(facilityId, facilityRequest, multipartFile, userInfo);
         return ResponseEntity.ok().build();
     }
 }
