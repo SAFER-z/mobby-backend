@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_USER_ACCOUNT;
 import static com.slack.api.webhook.WebhookPayloads.payload;
@@ -67,18 +67,18 @@ public class FacilityReportService {
                 .attachments(List.of(Attachment.builder()
                         .color(report.getMessageColor())
                         .fields(report.toMap().entrySet().stream()
-                                .map(entry -> generateSlackField(entry.getKey(), entry.getValue()))
-                                .collect(Collectors.toList())
+                                .map(this::generateSlackField)
+                                .toList()
                         )
                         .build()
                 ))
         ));
     }
 
-    private Field generateSlackField(String title, String value) {
+    private Field generateSlackField(Map.Entry<String,String> entry) {
         return Field.builder()
-                .title(title)
-                .value(value)
+                .title(entry.getKey())
+                .value(entry.getValue())
                 .valueShortEnough(false)
                 .build();
     }

@@ -32,15 +32,16 @@ public class NewFacilityReport implements FacilityReport {
 
     @Override
     public LinkedHashMap<String,String> toMap() {
-        LinkedHashMap<String,String> basicInfo = new LinkedHashMap<>(Map.ofEntries(
-                Map.entry("name", name),
-                Map.entry("address", address),
-                Map.entry("category", category),
-                Map.entry("image", imageUrl),
-                Map.entry("latitude", String.valueOf(latitude)),
-                Map.entry("longitude", String.valueOf(longitude))
-        ));
+        LinkedHashMap<String,String> basicInfo = new LinkedHashMap<>();
+
+        basicInfo.put("name", name);
+        basicInfo.put("address", address);
+        basicInfo.put("category", category);
+        basicInfo.put("image", imageUrl);
+        basicInfo.put("latitude", String.valueOf(latitude));
+        basicInfo.put("longitude", String.valueOf(longitude));
         basicInfo.putAll(detailInfo);
+
         return basicInfo;
     }
 }
