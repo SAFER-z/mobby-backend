@@ -1,9 +1,12 @@
 package com.safer.safer.facility.application;
 
+import com.safer.safer.batch.util.GeometryUtil;
+import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.facility.domain.FacilityType;
 import com.safer.safer.facility.dto.*;
 import com.safer.safer.common.exception.NoSuchElementException;
 import com.safer.safer.facility.domain.repository.FacilityRepository;
+import com.safer.safer.facility.dto.report.FacilityReport;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
@@ -52,6 +55,45 @@ public class FacilityService {
         return FacilitiesDistanceResponse.of(
                 facilityRepository.findFacilitiesWithDistance(userCoordinate, category)
         );
+    }
+
+    @Transactional
+    public void saveFacility(FacilityReport creationReport) {
+        Facility facility = Facility.of(
+                creationReport.name(),
+                FacilityType.from(creationReport.category()),
+                GeometryUtil.getPoint(creationReport.latitude(), creationReport.longitude()),
+                creationReport.address(),
+                creationReport.detailInfo().toString());
+
+        facilityRepository.save(facility);
+    }
+
+    @Transactional
+    public void updateFacility(FacilityReport modificationReport) {
+        Facility facility = facilityRepository.findById(modificationReport.facilityId())
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_FACILITY));
+
+        double latitude = modificationReport.latitude();
+        double longitude = modificationReport.longitude();
+
+        if(StringUtils.hasText(modificationReport.name()))
+            facility.updateName(modificationReport.name());
+
+        if(StringUtils.hasText(modificationReport.address()))
+            facility.updateAddress(modificationReport.address());
+
+        if(StringUtils.hasText(modificationReport.category()))
+            facility.updateCategory(FacilityType.from(modificationReport.category()));
+
+        if(!modificationReport.detailInfo().isEmpty())
+            facility.updateDetailInfo(modificationReport.detailInfo().toString());
+
+        if(StringUtils.hasText(modificationReport.imageUrl()))
+            facility.updateImageUrl(modificationReport.imageUrl());
+
+        if(GeometryUtil.isValidRange(latitude, longitude))
+            facility.updateCoordinate(GeometryUtil.getPoint(latitude, longitude));
     }
 
     public List<FacilityDistanceResponse> searchFacilities(String query, CoordinateRequest coordinate) {

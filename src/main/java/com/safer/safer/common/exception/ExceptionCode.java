@@ -18,6 +18,7 @@ public enum ExceptionCode {
     NO_SUCH_STATION("역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NO_SUCH_FACILITY("편의시설을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NO_SUCH_USER_ACCOUNT("사용자 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NO_SUCH_FACILITY_REPORT("해당 사용자 id로 저장된 편의시설 제보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     FAIL_TO_REQUEST_TMAP_API("TMap API 호출에 실패했습니다: ", HttpStatus.INTERNAL_SERVER_ERROR),
     FAIL_TO_UPLOAD_IMAGE("이미지 업로드에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),

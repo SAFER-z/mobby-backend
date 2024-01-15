@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public class FacilityUpdateReport implements FacilityReport {
+public class FacilityModificationReport implements FacilityReportConvertible {
     private final String currentName;
     private final String currentAddress;
     private final String currentCategory;
@@ -31,13 +31,12 @@ public class FacilityUpdateReport implements FacilityReport {
     private static final String BLUE = "#008BEF";
     private static final String CURRENT = "기존 ";
 
-    public static FacilityUpdateReport from(
+    public static FacilityModificationReport from(
             FacilityDetailResponse facilityToUpdate,
             Point currentCoordinate,
-            FacilityRequest facilityRequest,
-            String imageUrl
+            FacilityReport facilityReport
     ) {
-        return new FacilityUpdateReport(
+        return new FacilityModificationReport(
                 facilityToUpdate.name(),
                 facilityToUpdate.address(),
                 facilityToUpdate.category().name(),
@@ -46,19 +45,19 @@ public class FacilityUpdateReport implements FacilityReport {
                 currentCoordinate.getX(),
                 currentCoordinate.getY(),
 
-                facilityRequest.name(),
-                facilityRequest.address(),
-                facilityRequest.category(),
-                facilityRequest.detailInfo(),
-                imageUrl,
-                facilityRequest.latitude(),
-                facilityRequest.longitude()
+                facilityReport.name(),
+                facilityReport.address(),
+                facilityReport.category(),
+                facilityReport.detailInfo(),
+                facilityReport.imageUrl(),
+                facilityReport.latitude(),
+                facilityReport.longitude()
         );
     }
 
     @Override
-    public String getTitle(String userName) {
-        return userName + TITLE;
+    public String getTitle(String userName, Long userId) {
+        return String.format("%s(%d)%s", userName, userId, TITLE);
     }
 
     @Override

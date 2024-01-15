@@ -1,5 +1,6 @@
 package com.safer.safer.common.config;
 
+import com.safer.safer.facility.dto.report.FacilityReport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,7 @@ public class RedisConfig {
 
     @Bean
     public RedisTemplate<?,?> redisTemplate() {
-        RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<String, FacilityReport> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setKeySerializer(new StringRedisSerializer());

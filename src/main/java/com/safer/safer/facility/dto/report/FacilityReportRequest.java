@@ -2,7 +2,7 @@ package com.safer.safer.facility.dto.report;
 
 import java.util.Map;
 
-public record FacilityRequest(
+public record FacilityReportRequest(
         String name,
         String address,
         String category,
