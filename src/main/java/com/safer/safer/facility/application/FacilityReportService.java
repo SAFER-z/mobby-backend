@@ -43,7 +43,7 @@ public class FacilityReportService {
     private final static String DONE = " 완료";
     private final static String GUIDE = "{수락/거절} {제보한 유저의 아이디} {추가/수정} 양식을 확인해주세요.\n먼저 들어온 제보부터 처리됩니다.";
 
-    public void reportFacilityCreation(FacilityReportRequest request, MultipartFile file, UserInfo userInfo) throws IOException {
+    public void reportCreation(FacilityReportRequest request, MultipartFile file, UserInfo userInfo) throws IOException {
         Long userId = userInfo.userId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_USER_ACCOUNT));
@@ -55,7 +55,7 @@ public class FacilityReportService {
         sendMessage(FacilityCreationReport.from(facilityReport), user.getName(), userId);
     }
 
-    public void reportFacilityModification(Long facilityId, FacilityReportRequest request, MultipartFile file, UserInfo userInfo) throws IOException {
+    public void reportModification(Long facilityId, FacilityReportRequest request, MultipartFile file, UserInfo userInfo) throws IOException {
         Long userId = userInfo.userId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_USER_ACCOUNT));
