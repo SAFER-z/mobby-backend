@@ -51,10 +51,10 @@ public class FacilityController {
     @PostMapping("/reports")
     public ResponseEntity<Void> reportCreation(
             @RequestPart(value = "facilityReport") FacilityReportRequest facilityReportRequest,
-            @RequestPart(value = "imageFile") MultipartFile multipartFile,
+            @RequestPart(value = "imageFile", required = false) MultipartFile multipartFile,
             @Auth UserInfo userInfo
     ) throws IOException {
-        facilityReportService.reportFacilityCreation(facilityReportRequest, multipartFile, userInfo);
+        facilityReportService.reportCreation(facilityReportRequest, multipartFile, userInfo);
         return ResponseEntity.noContent().build();
     }
 
@@ -62,10 +62,10 @@ public class FacilityController {
     public ResponseEntity<Void> reportModification(
             @PathVariable final Long facilityId,
             @RequestPart(value = "facilityReport") FacilityReportRequest facilityReportRequest,
-            @RequestPart(value = "imageFile") MultipartFile multipartFile,
+            @RequestPart(value = "imageFile", required = false) MultipartFile multipartFile,
             @Auth UserInfo userInfo
     ) throws IOException {
-        facilityReportService.reportFacilityModification(facilityId, facilityReportRequest, multipartFile, userInfo);
+        facilityReportService.reportModification(facilityId, facilityReportRequest, multipartFile, userInfo);
         return ResponseEntity.noContent().build();
     }
 
