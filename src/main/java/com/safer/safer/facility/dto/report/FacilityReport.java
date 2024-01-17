@@ -1,6 +1,10 @@
 package com.safer.safer.facility.dto.report;
 
+import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public record FacilityReport(
         Long facilityId,
@@ -36,5 +40,12 @@ public record FacilityReport(
                 facilityReportRequest.latitude(),
                 facilityReportRequest.longitude()
         );
+    }
+
+    public String detailInfoToString() {
+        return detailInfo.entrySet().stream()
+                .filter(e -> !e.getValue().isEmpty())
+                .map(e -> String.join("=", e.getKey(), e.getValue()))
+                .collect(Collectors.joining(";"));
     }
 }

@@ -24,8 +24,7 @@ public class FacilityReportRepositoryImpl implements FacilityReportRepository {
     private final static int REPORT_EXPIRATION_DAYS = 7;
 
     @Override
-    public void save(Long userId, FacilityReport report) {
-        String key = "userId::" + userId;
+    public void save(String key, FacilityReport report) {
         ZSetOperations<String, FacilityReport> zSetOps = redisTemplate.opsForZSet();
         Date expirationDate = Date.from(now().plus(REPORT_EXPIRATION_DAYS, DAYS));
 
@@ -34,8 +33,7 @@ public class FacilityReportRepositoryImpl implements FacilityReportRepository {
     }
 
     @Override
-    public FacilityReport findReport(Long userId) {
-        String key = "userId::" + userId;
+    public FacilityReport find(String key) {
         ZSetOperations<String, FacilityReport> zSetOps = redisTemplate.opsForZSet();
 
         return Optional.ofNullable(zSetOps.popMin(key))

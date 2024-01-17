@@ -4,8 +4,8 @@ import com.safer.safer.facility.dto.report.FacilityReport;
 
 public interface FacilityReportRepository {
 
-    void save(Long userId, FacilityReport report);
+    void save(String key, FacilityReport report);
 
-    FacilityReport findReport(Long userId);
+    FacilityReport find(String key);
 
 }

@@ -41,17 +41,17 @@ public class FacilityReportService {
     private final FacilityRepository facilityRepository;
 
     private final static String DONE = " 완료";
-    private final static String GUIDE = "{수락/거절} {제보한 유저의 아이디} {추가/수정} 양식을 확인해주세요.\n먼저 들어온 제보부터 처리됩니다.";
+    private final static String GUIDE = "{수락/거절} {제보한 유저의 아이디} 양식을 확인해주세요.\n먼저 들어온 제보부터 처리됩니다.";
 
     public void reportCreation(FacilityReportRequest request, MultipartFile file, UserInfo userInfo) throws IOException {
         Long userId = userInfo.userId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_USER_ACCOUNT));
 
-        String imageUrl = s3Service.saveImage(file, userId);
+        String imageUrl = isFileValid(file) ? s3Service.saveImage(file, userId) : null;
         FacilityReport facilityReport = FacilityReport.from(request, imageUrl);
 
-        facilityReportRepository.save(userId, facilityReport);
+        facilityReportRepository.save(generateKey(userId), facilityReport);
         sendMessage(FacilityCreationReport.from(facilityReport), user.getName(), userId);
     }
 
@@ -62,18 +62,19 @@ public class FacilityReportService {
         Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_FACILITY));
 
-        String imageUrl = s3Service.saveImage(file, userId);
+        String imageUrl = isFileValid(file) ? s3Service.saveImage(file, userId) : null;
         FacilityReport facilityReport = FacilityReport.from(facilityId, request, imageUrl);
+
         FacilityModificationReport facilityModificationReport = FacilityModificationReport.from(
                 FacilityDetailResponse.from(facility), facility.getCoordinate(), facilityReport);
 
-        facilityReportRepository.save(userId, facilityReport);
+        facilityReportRepository.save(generateKey(userId), facilityReport);
         sendMessage(facilityModificationReport, user.getName(), userId);
     }
 
     public SlackResponse handleFacilityReport(SlackMessage message) {
         if(message.isValid()) {
-            FacilityReport facilityReport = facilityReportRepository.findReport(message.userId());
+            FacilityReport facilityReport = facilityReportRepository.find(generateKey(message.userId()));
             if(message.isAccept())
                 saveOrUpdateFacility(facilityReport);
 
@@ -109,5 +110,13 @@ public class FacilityReportService {
                 .value(entry.getValue())
                 .valueShortEnough(false)
                 .build();
+    }
+
+    private boolean isFileValid(MultipartFile file) {
+        return file != null && !file.isEmpty();
+    }
+
+    private String generateKey(Long userId) {
+        return "userId::" + userId;
     }
 }

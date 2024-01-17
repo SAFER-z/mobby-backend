@@ -87,7 +87,7 @@ public class FacilityService {
             facility.updateCategory(FacilityType.from(modificationReport.category()));
 
         if(!modificationReport.detailInfo().isEmpty())
-            facility.updateDetailInfo(modificationReport.detailInfo().toString());
+            facility.updateDetailInfo(modificationReport.detailInfoToString());
 
         if(StringUtils.hasText(modificationReport.imageUrl()))
             facility.updateImageUrl(modificationReport.imageUrl());
