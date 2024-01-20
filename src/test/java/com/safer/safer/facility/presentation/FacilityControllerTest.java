@@ -1,29 +1,42 @@
 package com.safer.safer.facility.presentation;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
+import static com.epages.restdocs.apispec.ResourceDocumentation.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
+import com.safer.safer.auth.dto.UserInfo;
+import com.safer.safer.auth.presentation.AuthArgumentResolver;
 import com.safer.safer.common.ControllerTest;
+import com.safer.safer.facility.application.FacilityReportService;
 import com.safer.safer.facility.domain.FacilityType;
 import com.safer.safer.facility.dto.*;
 import com.safer.safer.facility.application.FacilityService;
+import com.safer.safer.facility.dto.report.FacilityReportRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +47,10 @@ public class FacilityControllerTest extends ControllerTest {
 
     @MockBean
     FacilityService facilityService;
+    @MockBean
+    FacilityReportService facilityReportService;
+    @MockBean
+    AuthArgumentResolver authArgumentResolver;
 
     @Test
     @DisplayName("1.5km 반경 내 편의시설 조회")
@@ -370,6 +387,156 @@ public class FacilityControllerTest extends ControllerTest {
                                                         fieldWithPath("facilities[].distance").description("사용자 위치 기준 거리(미터)")
                                                 )
                                                 .responseSchema(Schema.schema("FacilitiesDistanceResponse"))
+                                                .build()
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("편의시설 생성 제보")
+    void reportFacilityCreation() throws Exception {
+        //given
+        FacilityReportRequest facilityReport = new FacilityReportRequest(
+                "강변 공영주차장",
+                "서울특별시 성동구 둘레길 47-5 (성수동1가)",
+                FacilityType.PARKING_LOT.name(),
+                Map.of(),
+                37.5448467,
+                127.0392661
+        );
+        MockMultipartFile facilityReportToPart = new MockMultipartFile(
+                "facilityReport",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(facilityReport).getBytes(StandardCharsets.UTF_8)
+        );
+        MockMultipartFile imageFile = getMockMultipartFile();
+        UserInfo userInfo = UserInfo.of(1L);
+
+        //when
+        doNothing().when(facilityReportService).reportCreation(facilityReport, imageFile, userInfo);
+        when(authArgumentResolver.supportsParameter((MethodParameter) notNull()))
+                .thenReturn(true);
+        when(authArgumentResolver.resolveArgument(
+                (MethodParameter) notNull(),
+                (ModelAndViewContainer) notNull(),
+                (NativeWebRequest) notNull(),
+                (WebDataBinderFactory) notNull()
+        )).thenReturn(userInfo);
+
+        //then
+        mockMvc.perform(
+                        RestDocumentationRequestBuilders.multipart(DEFAULT_URL + "/reports")
+                                .file(imageFile)
+                                .file(facilityReportToPart)
+                                .content(objectMapper.writeValueAsString(facilityReport))
+                                .param("imageFile","")
+                                .header("Authorization", "Bearer accessToken")
+                )
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(
+                        MockMvcRestDocumentationWrapper.document(
+                                "{class-name}/{method-name}",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                resource(
+                                        ResourceSnippetParameters.builder()
+                                                .tag("편의시설 API")
+                                                .description("편의시설 생성 제보")
+                                                .requestHeaders(headerWithName("Authorization").description("JWT AccessToken"))
+                                                .requestFields(
+                                                        fieldWithPath("imageFile").description("편의시설 사진").type(JsonFieldType.STRING).optional(),
+                                                        fieldWithPath("name").description("편의시설 이름"),
+                                                        fieldWithPath("address").description("편의시설 주소"),
+                                                        fieldWithPath("category").description("편의시설 종류"),
+                                                        fieldWithPath("detailInfo").description("편의시설 상세정보"),
+                                                        fieldWithPath("latitude").description("편의시설 위도"),
+                                                        fieldWithPath("longitude").description("편의시설 경도")
+                                                )
+                                                .requestSchema(Schema.schema("FacilityReportSchema"))
+                                                .build()
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @DisplayName("편의시설 수정 / 정보 추가 제보")
+    void reportFacilityModification() throws Exception {
+        //given
+        Long facilityId = 1L;
+        FacilityReportRequest facilityReport = new FacilityReportRequest(
+                "강변 공영주차장",
+                "서울특별시 성동구 둘레길 47-5 (성수동1가)",
+                FacilityType.PARKING_LOT.name(),
+                Map.of(),
+                37.5448467,
+                127.0392661
+        );
+        MockMultipartFile facilityReportToPart = new MockMultipartFile(
+                "facilityReport",
+                null,
+                "application/json",
+                objectMapper.writeValueAsString(facilityReport).getBytes(StandardCharsets.UTF_8)
+        );
+        MockMultipartFile imageFile = getMockMultipartFile();
+        UserInfo userInfo = UserInfo.of(1L);
+
+        //when
+        doNothing().when(facilityReportService).reportModification(facilityId, facilityReport, imageFile, userInfo);
+        when(authArgumentResolver.supportsParameter((MethodParameter) notNull()))
+                .thenReturn(true);
+        when(authArgumentResolver.resolveArgument(
+                (MethodParameter) notNull(),
+                (ModelAndViewContainer) notNull(),
+                (NativeWebRequest) notNull(),
+                (WebDataBinderFactory) notNull()
+        )).thenReturn(userInfo);
+
+        MockMultipartHttpServletRequestBuilder customRestDocumentationRequestBuilder = RestDocumentationRequestBuilders
+                .multipart(DEFAULT_URL+"/reports/{facilityId}", facilityId);
+
+        customRestDocumentationRequestBuilder.with(new RequestPostProcessor() {
+            @Override
+            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                request.setMethod("PUT");
+                return request;
+            }
+        });
+
+        //then
+        mockMvc.perform(
+                        customRestDocumentationRequestBuilder
+                                .file(imageFile)
+                                .file(facilityReportToPart)
+                                .content(objectMapper.writeValueAsString(facilityReport))
+                                .param("imageFile","")
+                                .header("Authorization", "Bearer accessToken")
+                )
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(
+                        MockMvcRestDocumentationWrapper.document(
+                                "{class-name}/{method-name}",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                resource(
+                                        ResourceSnippetParameters.builder()
+                                                .tag("편의시설 API")
+                                                .summary("편의시설 수정 제보")
+                                                .description("편의시설 수정 / 정보 추가 제보")
+                                                .pathParameters(parameterWithName("facilityId").description("수정 제보를 할 편의시설 ID"))
+                                                .requestHeaders(headerWithName("Authorization").description("JWT AccessToken"))
+                                                .requestFields(
+                                                        fieldWithPath("imageFile").description("수정할 편의시설 사진").type(JsonFieldType.STRING).optional(),
+                                                        fieldWithPath("name").description("수정할 편의시설 이름").optional(),
+                                                        fieldWithPath("address").description("수정할 편의시설 주소").optional(),
+                                                        fieldWithPath("category").description("수정할 편의시설 종류").optional(),
+                                                        fieldWithPath("detailInfo").description("수정할 편의시설 상세정보").optional(),
+                                                        fieldWithPath("latitude").description("수정할 편의시설 위도").optional(),
+                                                        fieldWithPath("longitude").description("수정할 편의시설 경도").optional()
+                                                )
+                                                .requestSchema(Schema.schema("FacilityModificationReportSchema"))
                                                 .build()
                                 )
                         )

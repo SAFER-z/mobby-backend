@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import lombok.Setter;
 import org.locationtech.jts.geom.Point;
 
 import java.util.Optional;
@@ -33,7 +32,6 @@ public class Facility {
 
     private String detailInfo;
 
-    @Setter
     private String imageUrl;
 
     @ManyToOne
@@ -59,5 +57,29 @@ public class Facility {
 
     public boolean isInStation() {
         return Optional.ofNullable(station).isPresent();
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateCategory(FacilityType category) {
+        this.category = category;
+    }
+
+    public void updateAddress(String address) {
+        this.address = address;
+    }
+
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateCoordinate(Point coordinate) {
+        this.coordinate = coordinate;
+    }
+
+    public void updateDetailInfo(String detailInfo) {
+        this.detailInfo = detailInfo;
     }
 }

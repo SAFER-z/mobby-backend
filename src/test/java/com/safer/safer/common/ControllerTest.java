@@ -12,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+
+import java.nio.charset.StandardCharsets;
 
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
@@ -38,6 +41,13 @@ public abstract class ControllerTest {
             37.5448467,
             127.0392661
     );
+    protected MockMultipartFile getMockMultipartFile() {
+        String name = "imageFile";
+        String contentType = "multipart/form-data";
+        String path = "test.jpg";
+
+        return new MockMultipartFile(name, path, contentType, path.getBytes(StandardCharsets.UTF_8));
+    }
 
     @BeforeEach
     void setUp(final RestDocumentationContextProvider restDocumentation) {
