@@ -38,7 +38,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Gradle
-        run: ./gradlew clean bootJar
+        run: ./gradlew clean bootJar -PSERVER_URL=${{ secrets.SERVER_URL }}
 
       - name: Docker Build
         run: docker build --build-arg PROFILE=dev -t yun8565/mobby-server-dev:latest .
