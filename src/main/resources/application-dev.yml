@@ -70,3 +70,6 @@ webhook:
 
 appKey: ${TMAP_APP_KEY}
 confirmKey: ${JUSO_API_KEY}
+
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS}

@@ -89,7 +89,7 @@ bootJar {
 }
 
 openapi3 {
-	def serverUrl = System.getenv("SERVER_URL")
+	def serverUrl = project.property("SERVER_URL")
 	server = "$serverUrl"
 	title = "Mobby API 문서"
 	description = "Spring REST Docs with Swagger UI"

@@ -38,7 +38,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Gradle
-        run: ./gradlew clean bootJar
+        run: ./gradlew clean bootJar -PSERVER_URL=${{ secrets.SERVER_URL }}
 
       - name: Docker Build
         run: docker build --build-arg PROFILE=dev -t yun8565/mobby-server-dev:latest .
@@ -75,5 +75,6 @@ jobs:
             -e SERVER_URL=${{secrets.SERVER_URL}} \
             -e TMAP_APP_KEY=${{secrets.TMAP_APP_KEY}} \
             -e WEBHOOK_SLACK_URL=${{secrets.WEBHOOK_SLACK_URL}} \
+            -e ALLOWED_ORIGINS=${{secrets.ALLOWED_ORIGINS}} \
             yun8565/mobby-server-dev:latest
             docker image prune -a -f
