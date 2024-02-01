@@ -56,9 +56,8 @@ jobs:
             docker pull yun8565/mobby-server-dev:latest
             docker stop server || true
             docker container prune -f
-            docker run -d --name server -p 8080:8080 --name server \
+            docker run -d --name server -p 8080:8080 --network redis-network \
             -e PROFILE=dev \
-            -e SERVER_URL=${{secrets.SERVER_URL}} \
             -e DB_PATH=${{secrets.DB_PATH}} \
             -e DB_USER=${{secrets.DB_USER}} \
             -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
@@ -77,4 +76,3 @@ jobs:
             -e WEBHOOK_SLACK_URL=${{secrets.WEBHOOK_SLACK_URL}} \
             -e ALLOWED_ORIGINS=${{secrets.ALLOWED_ORIGINS}} \
             yun8565/mobby-server-dev:latest
-            docker image prune -a -f
