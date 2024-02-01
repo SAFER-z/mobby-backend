@@ -2,8 +2,6 @@ name: Backend Dev CD
 
 on:
   workflow_dispatch:
-    -
-  push:
     branches:
       - develop
 
