@@ -52,17 +52,12 @@ jobs:
 
     steps:
       - name: Docker Pull & Run
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.REMOTE_IP_DEV }}
-          username: ${{ secrets.REMOTE_ID }}
-          key: ${{ secrets.REMOTE_SSH_KEY_DEV }}
-          port: ${{ secrets.REMOTE_PORT }}
-          script: |
+        run: |
             docker pull yun8565/mobby-server-dev:latest
             docker stop server || true
             docker container prune -f
             docker run -d --name server -p 8080:8080 --name server \
+            -e PROFILE=dev \
             -e DB_PATH=${{secrets.DB_PATH}} \
             -e DB_USER=${{secrets.DB_USER}} \
             -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
