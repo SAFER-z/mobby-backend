@@ -57,22 +57,5 @@ jobs:
             docker stop server || true
             docker container prune -f
             docker run -d --name server -p 8080:8080 --network redis-network \
-            -e PROFILE=dev \
-            -e DB_PATH=${{secrets.DB_PATH}} \
-            -e DB_USER=${{secrets.DB_USER}} \
-            -e DB_PASSWORD=${{secrets.DB_PASSWORD}} \
-            -e JUSO_API_KEY=${{secrets.JUSO_API_KEY}} \
-            -e JWT_SECRET=${{secrets.JWT_SECRET}} \
-            -e KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}} \
-            -e KAKAO_CLIENT_SECRET=${{secrets.KAKAO_CLIENT_SECRET}} \
-            -e NAVER_CLIENT_ID=${{secrets.NAVER_CLIENT_ID}} \
-            -e NAVER_CLIENT_SECRET=${{secrets.NAVER_CLIENT_SECRET}} \
-            -e NAVER_STATE=${{secrets.NAVER_STATE}} \
-            -e S3_ACCESS_KEY=${{secrets.S3_ACCESS_KEY}} \
-            -e S3_BUCKET=${{secrets.S3_BUCKET}} \
-            -e S3_SECRET_KEY=${{secrets.S3_SECRET_KEY}} \
-            -e SERVER_URL=${{secrets.SERVER_URL}} \
-            -e TMAP_APP_KEY=${{secrets.TMAP_APP_KEY}} \
-            -e WEBHOOK_SLACK_URL=${{secrets.WEBHOOK_SLACK_URL}} \
-            -e ALLOWED_ORIGINS=${{secrets.ALLOWED_ORIGINS}} \
+            --env-file ./.env \
             yun8565/mobby-server-dev:latest
