@@ -44,7 +44,7 @@ public class AuthControllerTest extends ControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(MockMvcResultMatchers.status().isFound())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(
                         MockMvcRestDocumentationWrapper.document(
                                 "{class-name}/{method-name}",
@@ -53,13 +53,13 @@ public class AuthControllerTest extends ControllerTest {
                                 resource(
                                         ResourceSnippetParameters.builder()
                                                 .tag("로그인 API")
-                                                .summary("소셜 로그인 창 불러오기")
-                                                .description("로그인 화면으로 리다이렉트")
+                                                .summary("소셜 로그인 URI 요청")
+                                                .description("로그인 URI를 통해 인증 코드 발급")
                                                 .pathParameters(
                                                         parameterWithName("provider").description("소셜 로그인 종류 [kakao, naver]")
                                                 )
-                                                .responseHeaders(
-                                                        headerWithName("Location").description("리다이렉트 링크")
+                                                .responseFields(
+                                                        fieldWithPath("loginUri").description("로그인 URI")
                                                 )
                                                 .build()
                                 )
@@ -90,7 +90,7 @@ public class AuthControllerTest extends ControllerTest {
                                         ResourceSnippetParameters.builder()
                                                 .tag("로그인 API")
                                                 .summary("토큰 발급")
-                                                .description("로그인 이후 AccessToken 발급 (로그인에 성공하면 자동으로 호출됩니다.\n실제로는 로그인 화면을 요청하면 AccessToken을 바로 받을 수 있습니다.)")
+                                                .description("AccessToken을 발급 받습니다.")
                                                 .pathParameters(
                                                         parameterWithName("provider").description("소셜 로그인 종류 [kakao, naver]")
                                                 )

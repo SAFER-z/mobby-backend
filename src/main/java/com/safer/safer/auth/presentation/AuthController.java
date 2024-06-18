@@ -1,14 +1,12 @@
 package com.safer.safer.auth.presentation;
 
 import com.safer.safer.auth.dto.AccessTokenResponse;
+import com.safer.safer.auth.dto.LoginUriResponse;
 import com.safer.safer.auth.dto.UserTokens;
 import com.safer.safer.auth.application.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,11 +16,9 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/{provider}")
-    public ResponseEntity<Void> findLoginRedirectUri(@PathVariable final String provider) {
+    public ResponseEntity<LoginUriResponse> findLoginRedirectUri(@PathVariable final String provider) {
         String loginRedirectUri = authService.generateLoginRedirectUri(provider);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(loginRedirectUri))
-                .build();
+        return ResponseEntity.ok(LoginUriResponse.of(loginRedirectUri));
     }
 
     @GetMapping("/login/{provider}")
