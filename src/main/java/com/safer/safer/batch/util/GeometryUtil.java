@@ -12,7 +12,7 @@ public class GeometryUtil {
     private static final double LONGITUDE_LOWER_BOUND = 124;
     private static final double LONGITUDE_UPPER_BOUND = 132;
 
-    public static Point getPoint(double latitude, double longitude) {
+    public static Point toPoint(double latitude, double longitude) {
         return geometryFactory.createPoint(new Coordinate(latitude, longitude));
     }
 

@@ -3,6 +3,7 @@ package com.safer.safer.batch;
 import com.safer.safer.batch.tasklet.facility.*;
 import com.safer.safer.batch.tasklet.stationFacility.*;
 import com.safer.safer.facility.domain.repository.CustomFacilityRepository;
+import com.safer.safer.routing.infrastructure.tmap.TMapRequester;
 import com.safer.safer.station.domain.repository.CustomStationRepository;
 import com.safer.safer.station.domain.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class JobConfig {
     private final CustomFacilityRepository facilityRepository;
     private final StationRepository stationRepository;
     private final CustomStationRepository customStationRepository;
+    private final TMapRequester tMapRequester;
 
     @Bean
     public Job insertionJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
@@ -90,14 +92,14 @@ public class JobConfig {
     @Bean
     public Step stationStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("stationStep", jobRepository)
-                .tasklet(new StationTasklet(customStationRepository), transactionManager)
+                .tasklet(new StationTasklet(customStationRepository, tMapRequester), transactionManager)
                 .build();
     }
 
     @Bean
     public Step toiletStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("toiletStep", jobRepository)
-                .tasklet(new ToiletTasklet(facilityRepository), transactionManager)
+                .tasklet(new ToiletTasklet(facilityRepository, tMapRequester), transactionManager)
                 .build();
     }
 
@@ -111,14 +113,14 @@ public class JobConfig {
     @Bean
     public Step parkingLotStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("parkingLotStep", jobRepository)
-                .tasklet(new ParkingLotTasklet(facilityRepository), transactionManager)
+                .tasklet(new ParkingLotTasklet(facilityRepository, tMapRequester), transactionManager)
                 .build();
     }
 
     @Bean
     public Step welfareFacilityStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("welfareFacilityStep", jobRepository)
-                .tasklet(new WelfareFacilityTasklet(facilityRepository), transactionManager)
+                .tasklet(new WelfareFacilityTasklet(facilityRepository, tMapRequester), transactionManager)
                 .build();
     }
 

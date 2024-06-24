@@ -2,6 +2,8 @@ package com.safer.safer.batch.tasklet.stationFacility;
 
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.stationFacility.StationDto;
+import com.safer.safer.routing.infrastructure.tmap.TMapRequester;
+import com.safer.safer.station.domain.OperatorType;
 import com.safer.safer.station.domain.Station;
 import com.safer.safer.station.domain.repository.CustomStationRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import static com.safer.safer.batch.util.BatchConstant.UTF_8;
 public class StationTasklet implements Tasklet {
 
     private final CustomStationRepository stationRepository;
+    private final TMapRequester tMapRequester;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -28,7 +31,14 @@ public class StationTasklet implements Tasklet {
         List<StationDto> items = CsvUtil.readCsv(filePath,UTF_8, StationDto.class);
 
         List<Station> stations = items.stream()
-                .map(StationDto::toEntity)
+                .map(item -> {
+                    OperatorType operatorType = OperatorType.from(item.getOperator());
+                    String stationName = CsvUtil.parseStationName(item.getName());
+
+                    return item.toEntity(item.needsCoordinate() ? tMapRequester.searchCoordinate(
+                            operatorType.getTMapKeyword(stationName, item.getLine())) : null
+                    );
+                })
                 .toList();
 
         stationRepository.saveAll(stations);

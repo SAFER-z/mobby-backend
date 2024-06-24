@@ -8,7 +8,7 @@ public record CoordinateRequest(
         double longitude
 ) {
     public Point toPoint() {
-        return GeometryUtil.getPoint(
+        return GeometryUtil.toPoint(
                 latitude,
                 longitude
         );
