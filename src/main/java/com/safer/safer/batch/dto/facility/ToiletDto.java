@@ -3,8 +3,8 @@ package com.safer.safer.batch.dto.facility;
 import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.GeometryUtil;
-import com.safer.safer.common.infrastructure.tmap.TMapRequester;
 import com.safer.safer.facility.domain.Facility;
+import lombok.Getter;
 import org.locationtech.jts.geom.Point;
 
 import java.util.stream.Collectors;
@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import static com.safer.safer.batch.util.BatchConstant.NORMAL_TOILET;
 import static com.safer.safer.facility.domain.FacilityType.TOILET;
 
+@Getter
 public class ToiletDto {
     @CsvBindByPosition(position = 0)
     private String type;
@@ -35,14 +36,14 @@ public class ToiletDto {
     @CsvBindByPosition(position = 9)
     private String longitude;
 
-    public Facility toEntity() {
-        Point coordinate = latitude.isBlank() ? TMapRequester.findPointByKeyword(address) :
-                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
-
+    public Facility toEntity(Point coordinate) {
         return Facility.of(
                 name.contains(NORMAL_TOILET) ? name : name.concat(" "+type),
                 TOILET,
-                coordinate,
+                needsCoordinate() ? coordinate : GeometryUtil.toPoint(
+                        Double.parseDouble(latitude),
+                        Double.parseDouble(longitude)
+                ),
                 address,
                 Stream.of(
                         phoneNumber.isBlank() ? "" : "phoneNumber="+phoneNumber,
@@ -52,5 +53,9 @@ public class ToiletDto {
                         .filter(info -> !info.isBlank())
                         .collect(Collectors.joining(";"))
         );
+    }
+
+    public boolean needsCoordinate() {
+        return latitude.isBlank();
     }
 }

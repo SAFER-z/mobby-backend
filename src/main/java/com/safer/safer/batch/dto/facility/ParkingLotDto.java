@@ -4,7 +4,6 @@ import com.opencsv.bean.CsvBindByPosition;
 import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.util.GeometryUtil;
-import com.safer.safer.common.infrastructure.tmap.TMapRequester;
 import lombok.Getter;
 import org.locationtech.jts.geom.Point;
 
@@ -53,14 +52,14 @@ public class ParkingLotDto {
     @CsvBindByPosition(position = 17)
     private String longitude;
 
-    public Facility toEntity() {
-        Point coordinate = latitude.isBlank() ? TMapRequester.findPointByKeyword(name) :
-                 GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude));
-
+    public Facility toEntity(Point coordinate) {
         return Facility.of(
                 CsvUtil.parseParenthesis(name),
                 PARKING_LOT,
-                coordinate,
+                needsCoordinate() ? coordinate : GeometryUtil.toPoint(
+                        Double.parseDouble(latitude),
+                        Double.parseDouble(longitude)
+                ),
                 roadAddress.isBlank() ? String.join(" ", SEOUL, address) : roadAddress,
                 Stream.of(
                         "operatingType="+operatingType,
@@ -79,5 +78,9 @@ public class ParkingLotDto {
                         .filter(info -> !info.isBlank())
                         .collect(Collectors.joining(";"))
         );
+    }
+
+    public boolean needsCoordinate() {
+        return latitude.isBlank();
     }
 }

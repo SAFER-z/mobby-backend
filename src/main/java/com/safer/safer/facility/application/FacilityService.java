@@ -62,7 +62,7 @@ public class FacilityService {
         Facility facility = Facility.of(
                 creationReport.name(),
                 FacilityType.from(creationReport.category()),
-                GeometryUtil.getPoint(creationReport.latitude(), creationReport.longitude()),
+                GeometryUtil.toPoint(creationReport.latitude(), creationReport.longitude()),
                 creationReport.address(),
                 creationReport.detailInfo().toString());
 
@@ -93,7 +93,7 @@ public class FacilityService {
             facility.updateImageUrl(modificationReport.imageUrl());
 
         if(GeometryUtil.isValidRange(latitude, longitude))
-            facility.updateCoordinate(GeometryUtil.getPoint(latitude, longitude));
+            facility.updateCoordinate(GeometryUtil.toPoint(latitude, longitude));
     }
 
     public List<FacilityDistanceResponse> searchFacilities(String query, CoordinateRequest coordinate) {

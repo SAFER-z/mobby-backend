@@ -34,7 +34,7 @@ public class ChargerDto {
         return Facility.of(
                 String.join(" ", name, WHEELCHAIR_CHARGER.getName()),
                 WHEELCHAIR_CHARGER,
-                GeometryUtil.getPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
+                GeometryUtil.toPoint(Double.parseDouble(latitude), Double.parseDouble(longitude)),
                 address,
                 String.join(";",
                         "detailLocation="+detailLocation,

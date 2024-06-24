@@ -4,36 +4,33 @@ import com.safer.safer.facility.application.FacilityService;
 import com.safer.safer.facility.dto.CoordinateRequest;
 import com.safer.safer.facility.dto.FacilityDistanceResponse;
 import com.safer.safer.routing.dto.SearchResponse;
-import com.safer.safer.routing.dto.address.AddressResponse;
-import com.safer.safer.routing.infrastructure.address.AddressRequester;
-import com.safer.safer.station.application.StationService;
-import com.safer.safer.station.dto.StationDistanceResponse;
+import com.safer.safer.routing.dto.tmap.TMapResponse;
+import com.safer.safer.routing.infrastructure.tmap.TMapRequester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.safer.safer.batch.util.BatchConstant.NUMBER_REGEX;
+import static com.safer.safer.routing.dto.tmap.POIResponse.POI;
 
 @Service
 @RequiredArgsConstructor
 public class RoutingService {
 
-    private final AddressRequester addressRequester;
     private final FacilityService facilityService;
-    private final StationService stationService;
+    private final TMapRequester tMapRequester;
 
-    public SearchResponse searchByKeyword(String keyword, CoordinateRequest coordinate) {
+    public SearchResponse searchByKeyword(String keyword, double latitude, double longitude) {
+        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
 
-        List<AddressResponse> addressSearchResult = isValidKeywordForAddress(keyword) ?
-                addressRequester.requestAddress(keyword) : List.of();
+        List<POI> tMapSearchResult = tMapRequester.searchWithCoordinate(keyword, latitude, longitude);
         List<FacilityDistanceResponse> facilitySearchResult = facilityService.searchFacilities(keyword, coordinate);
-        List<StationDistanceResponse> stationSearchResult = stationService.searchStations(keyword, coordinate);
 
-        return SearchResponse.of(facilitySearchResult, stationSearchResult, addressSearchResult);
-    }
-
-    private boolean isValidKeywordForAddress(String keyword) {
-        return !keyword.matches(NUMBER_REGEX) && keyword.length() > 1;
+        return SearchResponse.of(
+                facilitySearchResult,
+                tMapSearchResult.stream()
+                        .map(TMapResponse::from)
+                        .toList()
+        );
     }
 }

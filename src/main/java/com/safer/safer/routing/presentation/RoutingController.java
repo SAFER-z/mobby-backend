@@ -1,8 +1,5 @@
 package com.safer.safer.routing.presentation;
 
-import com.safer.safer.facility.application.FacilityService;
-import com.safer.safer.facility.dto.CoordinateRequest;
-import com.safer.safer.facility.dto.FacilitiesDistanceResponse;
 import com.safer.safer.routing.application.RoutingService;
 import com.safer.safer.routing.dto.SearchResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +22,6 @@ public class RoutingController {
             @RequestParam("lat") double latitude,
             @RequestParam("lon") double longitude
     ) {
-        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
-        // TODO: Station과 Address 검색 결과 합쳐서 반환하기
-        return ResponseEntity.ok(routingService.searchByKeyword(query, coordinate));
+        return ResponseEntity.ok(routingService.searchByKeyword(query, latitude, longitude));
     }
 }

@@ -45,12 +45,12 @@ public class ControllerAdvice {
                 .body(ExceptionResponse.from(exception));
     }
 
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<ExceptionResponse> slackExceptionHandler() {
-        return ResponseEntity
-                .status(FAIL_TO_SEND_MESSAGE.getStatus())
-                .body(ExceptionResponse.of(FAIL_TO_SEND_MESSAGE.getMessage()));
-    }
+//    @ExceptionHandler(IOException.class)
+//    public ResponseEntity<ExceptionResponse> slackExceptionHandler() {
+//        return ResponseEntity
+//                .status(FAIL_TO_SEND_MESSAGE.getStatus())
+//                .body(ExceptionResponse.of(FAIL_TO_SEND_MESSAGE.getMessage()));
+//    }
 
     private void logDebug(Exception exception) {
         log.debug(exception.getMessage(), exception);

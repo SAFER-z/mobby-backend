@@ -4,6 +4,7 @@ import com.safer.safer.batch.util.CsvUtil;
 import com.safer.safer.batch.dto.facility.ToiletDto;
 import com.safer.safer.facility.domain.Facility;
 import com.safer.safer.facility.domain.repository.CustomFacilityRepository;
+import com.safer.safer.routing.infrastructure.tmap.TMapRequester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -21,6 +22,7 @@ import static com.safer.safer.batch.util.BatchConstant.UTF_8;
 public class ToiletTasklet implements Tasklet {
 
     private final CustomFacilityRepository facilityRepository;
+    private final TMapRequester tMapRequester;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -28,7 +30,9 @@ public class ToiletTasklet implements Tasklet {
         List<ToiletDto> items = CsvUtil.readCsv(filePath, UTF_8, ToiletDto.class);
 
         List<Facility> toilets = items.stream()
-                .map(ToiletDto::toEntity)
+                .map(item -> item.toEntity(
+                        item.needsCoordinate() ? tMapRequester.searchCoordinate(item.getName()) : null
+                ))
                 .toList();
 
         facilityRepository.saveAll(toilets);

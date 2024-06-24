@@ -1,9 +1,9 @@
 package com.safer.safer.batch.dto.facility;
 
 import com.opencsv.bean.CsvBindByPosition;
-import com.safer.safer.common.infrastructure.tmap.TMapRequester;
 import com.safer.safer.facility.domain.Facility;
 import lombok.Getter;
+import org.locationtech.jts.geom.Point;
 
 import static com.safer.safer.facility.domain.FacilityType.WELFARE_FACILITY;
 
@@ -20,11 +20,11 @@ public class WelfareFacilityDto {
     @CsvBindByPosition(position = 4)
     private String phoneNumber;
 
-    public Facility toEntity() {
+    public Facility toEntity(Point coordinate) {
         return Facility.of(
                 name,
                 WELFARE_FACILITY,
-                TMapRequester.findPointByKeyword(address),
+                coordinate,
                 address,
                 String.join(";",
                         "type="+type+"-"+detailType,
