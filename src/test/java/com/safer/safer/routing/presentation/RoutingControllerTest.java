@@ -5,12 +5,10 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.safer.safer.common.ControllerTest;
 import com.safer.safer.facility.domain.FacilityType;
-import com.safer.safer.facility.dto.CoordinateRequest;
 import com.safer.safer.facility.dto.FacilityDistanceResponse;
 import com.safer.safer.routing.application.RoutingService;
 import com.safer.safer.routing.dto.SearchResponse;
-import com.safer.safer.routing.dto.address.AddressResponse;
-import com.safer.safer.station.dto.StationDistanceResponse;
+import com.safer.safer.routing.dto.tmap.TMapResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -40,8 +38,7 @@ public class RoutingControllerTest extends ControllerTest {
     @DisplayName("키워드로 통합 검색하기")
     void searchByKeyword() throws Exception {
         //given
-        CoordinateRequest userCoordinate = CoordinateRequest.of(coordinate.latitude(), coordinate.longitude());
-        when(routingService.searchByKeyword("query", userCoordinate))
+        when(routingService.searchByKeyword("query", coordinate.latitude(), coordinate.longitude()))
                 .thenReturn(SearchResponse.of(
                         List.of(new FacilityDistanceResponse() {
                             public Long getId() {return 1L;}
@@ -50,15 +47,16 @@ public class RoutingControllerTest extends ControllerTest {
                             public FacilityType getCategory() {return FacilityType.PARKING_LOT;}
                             public double getDistance() {return 100;}
                         }),
-                        List.of(new StationDistanceResponse() {
-                            public Long getId() {return 1L;}
-                            public String getName() {return "역삼역";}
-                            public String getAddress() {return "서울특별시 성동구 둘레길 47-5 (성수동1가)";}
-                            public String getLine() {return "1호선";}
-                            public double getDistance() {return 100;}
-                        }),
-                        List.of(AddressResponse.of("서울특별시 성동구 둘레길 47-5 (성수동1가)"))
-                ));
+                        List.of(new TMapResponse(
+                                "568848",
+                                "마포장애인종합복지관",
+                                37.56420321,
+                                126.90847192,
+                                "서울특별시 마포구 성산로4길 35",
+                                24.011
+
+                        )))
+                );
         //then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.get(DEFAULT_URL+"/search")
@@ -78,29 +76,27 @@ public class RoutingControllerTest extends ControllerTest {
                                         ResourceSnippetParameters.builder()
                                                 .tag("검색 API")
                                                 .summary("통합 검색")
-                                                .description("편의시설, 역, 주소 통합 검색")
+                                                .description("편의시설, TMAP 통합 검색")
                                                 .queryParameters(
                                                         parameterWithName("lat").description("사용자 현재 위도"),
                                                         parameterWithName("lon").description("사용자 현재 경도"),
                                                         parameterWithName("q").description("검색 키워드")
                                                 )
                                                 .responseFields(
-                                                        fieldWithPath("stations").description("역 검색 결과 목록"),
-                                                        fieldWithPath("stations[].id").description("역 id"),
-                                                        fieldWithPath("stations[].name").description("역 이름"),
-                                                        fieldWithPath("stations[].address").description("역 주소"),
-                                                        fieldWithPath("stations[].line").description("역 노선명"),
-                                                        fieldWithPath("stations[].distance").description("사용자 위치 기준 역 거리"),
-
                                                         fieldWithPath("facilities").description("편의시설 검색 결과 목록"),
-                                                        fieldWithPath("facilities[].id").description("편의시설 id"),
+                                                        fieldWithPath("facilities[].id").description("편의시설 ID"),
                                                         fieldWithPath("facilities[].name").description("편의시설 이름"),
                                                         fieldWithPath("facilities[].address").description("편의시설 주소"),
                                                         fieldWithPath("facilities[].category").description("편의시설 종류"),
-                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 편의시설 거리"),
+                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 편의시설 거리 (km)"),
 
-                                                        fieldWithPath("addresses").description("도로명주소 검색 결과 목록"),
-                                                        fieldWithPath("addresses[].address").description("도로명주소")
+                                                        fieldWithPath("tMapResponses").description("TMAP 검색 결과 목록"),
+                                                        fieldWithPath("tMapResponses[].id").description("장소 ID"),
+                                                        fieldWithPath("tMapResponses[].name").description("장소 이름"),
+                                                        fieldWithPath("tMapResponses[].latitude").description("장소 위도"),
+                                                        fieldWithPath("tMapResponses[].longitude").description("장소 경도"),
+                                                        fieldWithPath("tMapResponses[].address").description("상세 주소"),
+                                                        fieldWithPath("tMapResponses[].distance").description("사용자 위치 기준 장소 거리 (km)")
                                                 )
                                                 .responseSchema(Schema.schema("SearchResponse"))
                                                 .build()
