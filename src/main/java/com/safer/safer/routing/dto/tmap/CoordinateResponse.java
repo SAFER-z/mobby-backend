@@ -13,19 +13,19 @@ import java.util.List;
 public class CoordinateResponse {
 
     @JsonProperty("searchPoiInfo")
-    private POIResponse.SearchPoiInfo searchPoiInfo;
+    private SearchResult.SearchPlaceResult searchPlaceResult;
 
     public Point getCoordinate() {
         return GeometryUtil.toPoint(
-                searchPoiInfo.pois.poi.get(0).getFrontLat(),
-                searchPoiInfo.pois.poi.get(0).getFrontLon()
+                searchPlaceResult.pois.poi.get(0).getFrontLat(),
+                searchPlaceResult.pois.poi.get(0).getFrontLon()
         );
     }
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class SearchPoiInfo {
-        List<POIResponse.POI> pois;
+        List<SearchResult.Place> pois;
     }
 
     @Getter

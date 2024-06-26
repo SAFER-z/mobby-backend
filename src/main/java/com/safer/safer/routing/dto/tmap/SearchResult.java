@@ -8,26 +8,26 @@ import java.util.List;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class POIResponse {
+public class SearchResult {
 
     @JsonProperty("searchPoiInfo")
-    private SearchPoiInfo searchPoiInfo;
+    private SearchPlaceResult searchPoiInfo;
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class SearchPoiInfo {
-        PoiList pois;
+    public static class SearchPlaceResult {
+        Places pois;
     }
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class PoiList {
-        List<POI> poi;
+    public static class Places {
+        List<Place> poi;
     }
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class POI {
+    public static class Place {
         private String id;
         private String name;
         private String telNo;

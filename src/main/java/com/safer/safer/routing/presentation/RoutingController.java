@@ -2,12 +2,10 @@ package com.safer.safer.routing.presentation;
 
 import com.safer.safer.routing.application.RoutingService;
 import com.safer.safer.routing.dto.SearchResponse;
+import com.safer.safer.routing.dto.tmap.PlaceDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,5 +21,10 @@ public class RoutingController {
             @RequestParam("lon") double longitude
     ) {
         return ResponseEntity.ok(routingService.searchByKeyword(query, latitude, longitude));
+    }
+
+    @GetMapping("places/{placeId}")
+    public ResponseEntity<PlaceDetailResponse> find(@PathVariable String placeId) {
+        return ResponseEntity.ok(routingService.findPlace(placeId));
     }
 }
