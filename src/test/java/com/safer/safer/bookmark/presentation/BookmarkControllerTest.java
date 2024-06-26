@@ -7,29 +7,24 @@ import com.safer.safer.auth.dto.UserInfo;
 import com.safer.safer.auth.presentation.AuthArgumentResolver;
 import com.safer.safer.bookmark.application.BookmarkService;
 import com.safer.safer.bookmark.domain.ResourceType;
+import com.safer.safer.bookmark.dto.BookmarkResponse;
+import com.safer.safer.bookmark.dto.BookmarksResponse;
 import com.safer.safer.common.ControllerTest;
-import com.safer.safer.facility.application.FacilityService;
-import com.safer.safer.facility.domain.FacilityType;
-import com.safer.safer.facility.dto.report.FacilityReportRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.List;
 
-import static com.epages.restdocs.apispec.ResourceDocumentation.headerWithName;
-import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.ResourceDocumentation.*;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -67,8 +62,8 @@ public class BookmarkControllerTest extends ControllerTest {
         //then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.post(DEFAULT_URL)
-                                .param("placeId", String.valueOf(123))
-                                .param("resource", "OpenAPI")
+                                .queryParam("placeId", String.valueOf(123))
+                                .queryParam("resource", "OpenAPI")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer accessToken")
                 )
@@ -83,9 +78,9 @@ public class BookmarkControllerTest extends ControllerTest {
                                                 .tag("즐겨찾기 API")
                                                 .description("장소 즐겨찾기 추가")
                                                 .requestHeaders(headerWithName("Authorization").description("JWT AccessToken"))
-                                                .requestFields(
-                                                        fieldWithPath("placeId").description("즐겨찾기에 추가할 장소 ID"),
-                                                        fieldWithPath("resource").description("장소 출처 구분 (OpenAPI / TMap)")
+                                                .queryParameters(
+                                                        parameterWithName("placeId").description("즐겨찾기에 등록할 장소 ID"),
+                                                        parameterWithName("resource").description("장소 출처 구분 (OpenAPI / TMap)")
                                                 )
                                                 .requestSchema(Schema.schema("BookmarkSchema"))
                                                 .build()
@@ -114,8 +109,8 @@ public class BookmarkControllerTest extends ControllerTest {
         //then
         mockMvc.perform(
                         RestDocumentationRequestBuilders.delete(DEFAULT_URL)
-                                .param("placeId", String.valueOf(123))
-                                .param("resource", "OpenAPI")
+                                .queryParam("placeId", String.valueOf(123))
+                                .queryParam("resource", "OpenAPI")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer accessToken")
                 )
@@ -130,9 +125,9 @@ public class BookmarkControllerTest extends ControllerTest {
                                                 .tag("즐겨찾기 API")
                                                 .description("장소 즐겨찾기 해제")
                                                 .requestHeaders(headerWithName("Authorization").description("JWT AccessToken"))
-                                                .requestFields(
-                                                        fieldWithPath("placeId").description("즐겨찾기에서 해제할 장소 ID"),
-                                                        fieldWithPath("resource").description("장소 출처 구분 (OpenAPI / TMap)")
+                                                .queryParameters(
+                                                        parameterWithName("placeId").description("즐겨찾기에서 해제할 장소 ID"),
+                                                        parameterWithName("resource").description("장소 출처 구분 (OpenAPI / TMap)")
                                                 )
                                                 .build()
                                 )
@@ -145,9 +140,15 @@ public class BookmarkControllerTest extends ControllerTest {
     void findBookmarks() throws Exception {
         //given
         UserInfo userInfo = UserInfo.of(1L);
+        when(bookmarkService.findBookmarks(userInfo))
+                .thenReturn(BookmarksResponse.of(
+                        List.of(new BookmarkResponse() {
+                            public String getPlaceId() {return "14412";}
+                            public ResourceType getResource() {return ResourceType.TMap;}
+                        }))
+                );
 
         //when
-        doNothing().when(bookmarkService).findBookmarks(userInfo);
         when(authArgumentResolver.supportsParameter((MethodParameter) notNull()))
                 .thenReturn(true);
         when(authArgumentResolver.resolveArgument(
@@ -175,8 +176,9 @@ public class BookmarkControllerTest extends ControllerTest {
                                                 .description("즐겨찾기 목록 조회")
                                                 .requestHeaders(headerWithName("Authorization").description("JWT AccessToken"))
                                                 .responseFields(
-                                                        fieldWithPath("placeId").description("즐겨찾기 장소 ID"),
-                                                        fieldWithPath("resource").description("장소 출처 구분 (OpenAPI / TMap)")
+                                                        fieldWithPath("bookmarks").description("즐겨찾기 장소 목록"),
+                                                        fieldWithPath("bookmarks[].placeId").description("즐겨찾기 장소 ID"),
+                                                        fieldWithPath("bookmarks[].resource").description("장소 출처 구분 (OpenAPI / TMap)")
                                                 )
                                                 .build()
                                 )

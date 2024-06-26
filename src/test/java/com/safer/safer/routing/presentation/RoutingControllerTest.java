@@ -5,7 +5,6 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.safer.safer.common.ControllerTest;
 import com.safer.safer.facility.domain.FacilityType;
-import com.safer.safer.facility.dto.FacilityDetailResponse;
 import com.safer.safer.facility.dto.FacilityDistanceResponse;
 import com.safer.safer.routing.application.RoutingService;
 import com.safer.safer.routing.dto.SearchResponse;
@@ -20,11 +19,9 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -95,13 +92,13 @@ public class RoutingControllerTest extends ControllerTest {
                                                         fieldWithPath("facilities[].category").description("편의시설 종류"),
                                                         fieldWithPath("facilities[].distance").description("사용자 위치 기준 편의시설 거리 (km)"),
 
-                                                        fieldWithPath("tMapResponses").description("TMAP 검색 결과 목록"),
-                                                        fieldWithPath("tMapResponses[].id").description("장소 ID"),
-                                                        fieldWithPath("tMapResponses[].name").description("장소 이름"),
-                                                        fieldWithPath("tMapResponses[].latitude").description("장소 위도"),
-                                                        fieldWithPath("tMapResponses[].longitude").description("장소 경도"),
-                                                        fieldWithPath("tMapResponses[].address").description("상세 주소"),
-                                                        fieldWithPath("tMapResponses[].distance").description("사용자 위치 기준 장소 거리 (km)")
+                                                        fieldWithPath("placeResponse").description("TMAP 검색 결과 목록"),
+                                                        fieldWithPath("placeResponse[].id").description("장소 ID"),
+                                                        fieldWithPath("placeResponse[].name").description("장소 이름"),
+                                                        fieldWithPath("placeResponse[].latitude").description("장소 위도"),
+                                                        fieldWithPath("placeResponse[].longitude").description("장소 경도"),
+                                                        fieldWithPath("placeResponse[].address").description("상세 주소"),
+                                                        fieldWithPath("placeResponse[].distance").description("사용자 위치 기준 장소 거리 (km)")
                                                 )
                                                 .responseSchema(Schema.schema("SearchResponse"))
                                                 .build()
