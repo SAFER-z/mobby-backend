@@ -35,6 +35,9 @@ public enum ExceptionCode {
     FAIL_TO_REQUEST_JUSO("도로명주소 API 요청에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_JUSO_REQUEST("올바르지 않은 요청입니다: ", HttpStatus.BAD_REQUEST),
 
+    DUPLICATE_BOOKMARK_REQUEST("이미 즐겨찾기에 등록된 장소입니다.", HttpStatus.BAD_REQUEST),
+    BOOKMARK_DELETION_FORBIDDEN("즐겨찾기 해제 권한이 없습니다.", HttpStatus.FORBIDDEN),
+
     INVALID_RANGE("좌표의 범위를 확인해주세요.", HttpStatus.BAD_REQUEST);
 
     private final String message;
