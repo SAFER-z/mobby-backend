@@ -52,62 +52,62 @@ public class FacilityControllerTest extends ControllerTest {
     @MockBean
     AuthArgumentResolver authArgumentResolver;
 
-    @Test
-    @DisplayName("1.5km 반경 내 편의시설 조회")
-    void findFacilitiesByDistanceAndCategory() throws Exception {
-        //given
-        when(facilityService.findFacilitiesWithin(coordinate, "PARKING_LOT"))
-                .thenReturn(FacilitiesResponse.of(
-                        List.of(new FacilityResponse(
-                                1L,
-                                "강변 공영주차장",
-                                FacilityType.PARKING_LOT,
-                                "서울특별시 성동구 둘레길 47-5 (성수동1가)",
-                                37.53696583,
-                                127.0490425
-                        )))
-                );
-        //then
-        mockMvc.perform(
-                        RestDocumentationRequestBuilders.get(DEFAULT_URL)
-                                .param("lat", "37.5448467")
-                                .param("lon", "127.0392661")
-                                .param("category", "PARKING_LOT")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(
-                        MockMvcRestDocumentationWrapper.document(
-                                "{class-name}/{method-name}",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                resource(
-                                        ResourceSnippetParameters.builder()
-                                                .tag("편의시설 API")
-                                                .summary("편의시설 전체 조회")
-                                                .description("1.5km 반경 내 편의시설 전체 조회 | 카테고리 별 조회")
-                                                .queryParameters(
-                                                        parameterWithName("lat").description("사용자 현재 위도"),
-                                                        parameterWithName("lon").description("사용자 현재 경도"),
-                                                        parameterWithName("category").optional().description("편의시설 카테고리")
-                                                )
-                                                .responseFields(
-                                                        fieldWithPath("facilities").description("편의시설 상세 정보 목록"),
-                                                        fieldWithPath("facilities[].id").description("편의시설 id"),
-                                                        fieldWithPath("facilities[].name").description("편의시설 이름"),
-                                                        fieldWithPath("facilities[].category").description("편의시설 종류"),
-                                                        fieldWithPath("facilities[].address").description("편의시설 주소"),
-                                                        fieldWithPath("facilities[].isAccessible").optional().type(boolean.class).description("(화장실)장애인화장실 여부"),
-                                                        fieldWithPath("facilities[].latitude").description("편의시설 위도"),
-                                                        fieldWithPath("facilities[].longitude").description("편의시설 경도")
-                                                )
-                                                .responseSchema(Schema.schema("FacilitiesResponse"))
-                                                .build()
-                                )
-                        )
-                );
-    }
+//    @Test
+//    @DisplayName("1.5km 반경 내 편의시설 조회")
+//    void findFacilitiesByDistanceAndCategory() throws Exception {
+//        //given
+//        when(facilityService.findFacilitiesWithin(coordinate, "PARKING_LOT"))
+//                .thenReturn(FacilitiesResponse.of(
+//                        List.of(new FacilityResponse(
+//                                1L,
+//                                "강변 공영주차장",
+//                                FacilityType.PARKING_LOT,
+//                                "서울특별시 성동구 둘레길 47-5 (성수동1가)",
+//                                37.53696583,
+//                                127.0490425
+//                        )))
+//                );
+//        //then
+//        mockMvc.perform(
+//                        RestDocumentationRequestBuilders.get(DEFAULT_URL)
+//                                .param("lat", "37.5448467")
+//                                .param("lon", "127.0392661")
+//                                .param("category", "PARKING_LOT")
+//                                .contentType(MediaType.APPLICATION_JSON)
+//                                .accept(MediaType.APPLICATION_JSON)
+//                )
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andDo(
+//                        MockMvcRestDocumentationWrapper.document(
+//                                "{class-name}/{method-name}",
+//                                preprocessRequest(prettyPrint()),
+//                                preprocessResponse(prettyPrint()),
+//                                resource(
+//                                        ResourceSnippetParameters.builder()
+//                                                .tag("편의시설 API")
+//                                                .summary("편의시설 전체 조회")
+//                                                .description("1.5km 반경 내 편의시설 전체 조회 | 카테고리 별 조회")
+//                                                .queryParameters(
+//                                                        parameterWithName("lat").description("사용자 현재 위도"),
+//                                                        parameterWithName("lon").description("사용자 현재 경도"),
+//                                                        parameterWithName("category").optional().description("편의시설 카테고리")
+//                                                )
+//                                                .responseFields(
+//                                                        fieldWithPath("facilities").description("편의시설 상세 정보 목록"),
+//                                                        fieldWithPath("facilities[].id").description("편의시설 id"),
+//                                                        fieldWithPath("facilities[].name").description("편의시설 이름"),
+//                                                        fieldWithPath("facilities[].category").description("편의시설 종류"),
+//                                                        fieldWithPath("facilities[].address").description("편의시설 주소"),
+//                                                        fieldWithPath("facilities[].isAccessible").optional().type(boolean.class).description("(화장실)장애인화장실 여부"),
+//                                                        fieldWithPath("facilities[].latitude").description("편의시설 위도"),
+//                                                        fieldWithPath("facilities[].longitude").description("편의시설 경도")
+//                                                )
+//                                                .responseSchema(Schema.schema("FacilitiesResponse"))
+//                                                .build()
+//                                )
+//                        )
+//                );
+//    }
 
     @Test
     @DisplayName("주차장 상세 조회")
@@ -341,24 +341,25 @@ public class FacilityControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("1.5km 반경 내 편의시설 거리순 조회")
-    void findFacilitiesByCategoryWithDistance() throws Exception {
+    void findFacilitiesWithIn() throws Exception {
         //given
-        when(facilityService.findFacilitiesWithDistance(coordinate, "PARKING_LOT"))
+        when(facilityService.findFacilitiesWithDistance(coordinate))
                 .thenReturn(FacilitiesDistanceResponse.of(
                         List.of(new FacilityDistanceResponse() {
                             public Long getId() {return 1L;}
                             public String getName() {return "강변 공영주차장";}
                             public String getAddress() {return "서울특별시 성동구 둘레길 47-5 (성수동1가)";}
                             public FacilityType getCategory() {return FacilityType.PARKING_LOT;}
-                            public double getDistance() {return 100;}
+                            public double getLatitude() {return 37.1;}
+                            public double getLongitude() {return 127.2;}
+                            public double getDistance() {return 1.5;}
                         }))
                 );
         //then
         mockMvc.perform(
-                        RestDocumentationRequestBuilders.get(DEFAULT_URL+"/sorted")
+                        RestDocumentationRequestBuilders.get(DEFAULT_URL)
                                 .param("lat", "37.5448467")
                                 .param("lon", "127.0392661")
-                                .param("category", "PARKING_LOT")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
@@ -371,12 +372,11 @@ public class FacilityControllerTest extends ControllerTest {
                                 resource(
                                         ResourceSnippetParameters.builder()
                                                 .tag("편의시설 API")
-                                                .summary("편의시설 거리순 조회")
-                                                .description("1.5km 반경 내 편의시설 카테고리 별 조회")
+                                                .summary("편의시설 전체 조회")
+                                                .description("1.5km 반경 내 편의시설 거리순 조회")
                                                 .queryParameters(
                                                         parameterWithName("lat").description("사용자 현재 위도"),
-                                                        parameterWithName("lon").description("사용자 현재 경도"),
-                                                        parameterWithName("category").optional().description("편의시설 카테고리")
+                                                        parameterWithName("lon").description("사용자 현재 경도")
                                                 )
                                                 .responseFields(
                                                         fieldWithPath("facilities").description("편의시설 정보 목록"),
@@ -384,7 +384,9 @@ public class FacilityControllerTest extends ControllerTest {
                                                         fieldWithPath("facilities[].name").description("편의시설 이름"),
                                                         fieldWithPath("facilities[].address").description("편의시설 주소"),
                                                         fieldWithPath("facilities[].category").description("편의시설 종류"),
-                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 거리(미터)")
+                                                        fieldWithPath("facilities[].latitude").description("편의시설 위도"),
+                                                        fieldWithPath("facilities[].longitude").description("편의시설 경도"),
+                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 편의시설의 거리 (km)")
                                                 )
                                                 .responseSchema(Schema.schema("FacilitiesDistanceResponse"))
                                                 .build()

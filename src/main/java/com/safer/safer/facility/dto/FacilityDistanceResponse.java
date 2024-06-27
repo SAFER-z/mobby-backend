@@ -8,5 +8,7 @@ public interface FacilityDistanceResponse {
     String getName();
     String getAddress();
     FacilityType getCategory();
+    double getLatitude();
+    double getLongitude();
     double getDistance();
 }

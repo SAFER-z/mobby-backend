@@ -7,12 +7,12 @@ import java.util.List;
 
 public record SearchResponse(
         List<FacilityDistanceResponse> facilities,
-        List<PlaceResponse> placeResponse
+        List<PlaceResponse> placesResponse
 ) {
     public static SearchResponse of(
             List<FacilityDistanceResponse> facilities,
-            List<PlaceResponse> placeResponse
+            List<PlaceResponse> placesResponse
     ) {
-        return new SearchResponse(facilities, placeResponse);
+        return new SearchResponse(facilities, placesResponse);
     }
 }

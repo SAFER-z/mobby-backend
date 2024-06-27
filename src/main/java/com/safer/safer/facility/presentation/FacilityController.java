@@ -29,24 +29,23 @@ public class FacilityController {
     }
 
     @GetMapping
-    public ResponseEntity<FacilitiesResponse> findAll(
+    public ResponseEntity<FacilitiesDistanceResponse> findAll(
             @RequestParam("lat") double latitude,
-            @RequestParam("lon") double longitude,
-            @RequestParam(required = false) String category
+            @RequestParam("lon") double longitude
     ) {
         CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
-        return ResponseEntity.ok(facilityService.findFacilitiesWithin(coordinate, category));
+        return ResponseEntity.ok(facilityService.findFacilitiesWithDistance(coordinate));
     }
 
-    @GetMapping("/sorted")
-    public ResponseEntity<FacilitiesDistanceResponse> findAllWithDistance(
-            @RequestParam("lat") double latitude,
-            @RequestParam("lon") double longitude,
-            @RequestParam("category") String category
-    ) {
-        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
-        return ResponseEntity.ok(facilityService.findFacilitiesWithDistance(coordinate, category));
-    }
+//    @GetMapping("/sorted")
+//    public ResponseEntity<FacilitiesDistanceResponse> findAllWithDistance(
+//            @RequestParam("lat") double latitude,
+//            @RequestParam("lon") double longitude,
+//            @RequestParam("category") String category
+//    ) {
+//        CoordinateRequest coordinate = CoordinateRequest.of(latitude, longitude);
+//        return ResponseEntity.ok(facilityService.findFacilitiesWithDistance(coordinate, category));
+//    }
 
     @PostMapping("/reports")
     public ResponseEntity<Void> reportCreation(

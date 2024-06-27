@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_FACILITY;
-import static com.safer.safer.common.exception.ExceptionCode.NO_SUCH_FACILITY_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -29,31 +28,31 @@ public class FacilityService {
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_FACILITY)));
     }
 
-    public FacilitiesResponse findFacilitiesWithin(CoordinateRequest coordinate, String category) {
-        Point userCoordinate = coordinate.toPoint();
+//    public FacilitiesResponse findFacilitiesWithin(CoordinateRequest coordinate, String category) {
+//        Point userCoordinate = coordinate.toPoint();
+//
+//        if(StringUtils.hasText(category))
+//            return findFacilitiesByCategoryWithin(userCoordinate, category);
+//
+//        return FacilitiesResponse.of(facilityRepository.findFacilitiesWithin(userCoordinate).stream()
+//                .map(FacilityResponse::from)
+//                .toList());
+//    }
+//
+//    public FacilitiesResponse findFacilitiesByCategoryWithin(Point userCoordinate, String category) {
+//        if(FacilityType.isNotValidType(category))
+//            throw new NoSuchElementException(NO_SUCH_FACILITY_TYPE, category);
+//
+//        return FacilitiesResponse.of(facilityRepository.findFacilitiesByCategoryWithin(userCoordinate, category).stream()
+//                .map(FacilityResponse::from)
+//                .toList());
+//    }
 
-        if(StringUtils.hasText(category))
-            return findFacilitiesByCategoryWithin(userCoordinate, category);
-
-        return FacilitiesResponse.of(facilityRepository.findFacilitiesWithin(userCoordinate).stream()
-                .map(FacilityResponse::from)
-                .toList());
-    }
-
-    public FacilitiesResponse findFacilitiesByCategoryWithin(Point userCoordinate, String category) {
-        if(FacilityType.isNotValidType(category))
-            throw new NoSuchElementException(NO_SUCH_FACILITY_TYPE, category);
-
-        return FacilitiesResponse.of(facilityRepository.findFacilitiesByCategoryWithin(userCoordinate, category).stream()
-                .map(FacilityResponse::from)
-                .toList());
-    }
-
-    public FacilitiesDistanceResponse findFacilitiesWithDistance(CoordinateRequest coordinate, String category) {
+    public FacilitiesDistanceResponse findFacilitiesWithDistance(CoordinateRequest coordinate) {
         Point userCoordinate = coordinate.toPoint();
 
         return FacilitiesDistanceResponse.of(
-                facilityRepository.findFacilitiesWithDistance(userCoordinate, category)
+                facilityRepository.findFacilitiesWithDistance(userCoordinate)
         );
     }
 
@@ -96,9 +95,7 @@ public class FacilityService {
             facility.updateCoordinate(GeometryUtil.toPoint(latitude, longitude));
     }
 
-    public List<FacilityDistanceResponse> searchFacilities(String query, CoordinateRequest coordinate) {
-        Point userCoordinate = coordinate.toPoint();
-
-        return facilityRepository.findSearchResult(query, userCoordinate);
+    public List<FacilityDistanceResponse> searchFacilities(String query, Point coordinate) {
+        return facilityRepository.findSearchResult(query, coordinate);
     }
 }

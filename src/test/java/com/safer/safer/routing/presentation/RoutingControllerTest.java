@@ -47,7 +47,9 @@ public class RoutingControllerTest extends ControllerTest {
                             public String getName() {return "강변 공영주차장";}
                             public String getAddress() {return "서울특별시 성동구 둘레길 47-5 (성수동1가)";}
                             public FacilityType getCategory() {return FacilityType.PARKING_LOT;}
-                            public double getDistance() {return 100;}
+                            public double getLatitude() {return 37.1;}
+                            public double getLongitude() {return 127.1;}
+                            public double getDistance() {return 1.5;}
                         }),
                         List.of(new PlaceResponse(
                                 "568848",
@@ -90,15 +92,17 @@ public class RoutingControllerTest extends ControllerTest {
                                                         fieldWithPath("facilities[].name").description("편의시설 이름"),
                                                         fieldWithPath("facilities[].address").description("편의시설 주소"),
                                                         fieldWithPath("facilities[].category").description("편의시설 종류"),
-                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 편의시설 거리 (km)"),
+                                                        fieldWithPath("facilities[].latitude").description("편의시설 위도"),
+                                                        fieldWithPath("facilities[].longitude").description("편의시설 경도"),
+                                                        fieldWithPath("facilities[].distance").description("사용자 위치 기준 편의시설의 거리 (km)"),
 
-                                                        fieldWithPath("placeResponse").description("TMAP 검색 결과 목록"),
-                                                        fieldWithPath("placeResponse[].id").description("장소 ID"),
-                                                        fieldWithPath("placeResponse[].name").description("장소 이름"),
-                                                        fieldWithPath("placeResponse[].latitude").description("장소 위도"),
-                                                        fieldWithPath("placeResponse[].longitude").description("장소 경도"),
-                                                        fieldWithPath("placeResponse[].address").description("상세 주소"),
-                                                        fieldWithPath("placeResponse[].distance").description("사용자 위치 기준 장소 거리 (km)")
+                                                        fieldWithPath("placesResponse").description("TMAP 검색 결과 목록"),
+                                                        fieldWithPath("placesResponse[].id").description("장소 ID"),
+                                                        fieldWithPath("placesResponse[].name").description("장소 이름"),
+                                                        fieldWithPath("placesResponse[].latitude").description("장소 위도"),
+                                                        fieldWithPath("placesResponse[].longitude").description("장소 경도"),
+                                                        fieldWithPath("placesResponse[].address").description("상세 주소"),
+                                                        fieldWithPath("placesResponse[].distance").description("사용자 위치 기준 장소 거리 (km)")
                                                 )
                                                 .responseSchema(Schema.schema("SearchResponse"))
                                                 .build()
