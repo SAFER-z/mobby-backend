@@ -63,7 +63,7 @@ public class FacilityService {
                 FacilityType.from(creationReport.category()),
                 GeometryUtil.toPoint(creationReport.latitude(), creationReport.longitude()),
                 creationReport.address(),
-                creationReport.detailInfo().toString());
+                creationReport.detailInfoToString());
         
         facility.updateImageUrl(creationReport.imageUrl());
         facilityRepository.save(facility);
