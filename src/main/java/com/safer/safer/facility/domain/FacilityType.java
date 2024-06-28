@@ -17,7 +17,8 @@ public enum FacilityType {
     PARKING_LOT("주차구역"),
     ACCESSIBLE_RAMP("경사로"),
     ELEVATOR("엘리베이터"),
-    WELFARE_FACILITY("복지시설");
+    WELFARE_FACILITY("복지시설"),
+    ACCESSIBILITY("접근성 인증 가게");
 
     private final String name;
 
