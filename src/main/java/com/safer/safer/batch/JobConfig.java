@@ -7,41 +7,47 @@ import com.safer.safer.routing.infrastructure.tmap.TMapRequester;
 import com.safer.safer.station.domain.repository.CustomStationRepository;
 import com.safer.safer.station.domain.repository.StationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class JobConfig {
 
     private final CustomFacilityRepository facilityRepository;
     private final StationRepository stationRepository;
     private final CustomStationRepository customStationRepository;
     private final TMapRequester tMapRequester;
+    private final TaskExecutor taskExecutor;
 
     @Bean
-    public Job insertionJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Job etlJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("데이터 저장 프로세스를 시작합니다.");
         return new JobBuilder("insertionJob", jobRepository)
+                .incrementer(new RunIdIncrementer())
                 .start(splitFlow(jobRepository, transactionManager))
                 .build()
                 .build();
+
     }
 
     @Bean
     public Flow splitFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new FlowBuilder<SimpleFlow>("splitFlow")
-                .split(taskExecutor())
+                .split(taskExecutor)
                 .add(stationFlow(jobRepository, transactionManager), facilityFlow(jobRepository, transactionManager))
                 .build();
     }
@@ -49,10 +55,13 @@ public class JobConfig {
     @Bean
     public Flow facilityFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new FlowBuilder<SimpleFlow>("facilityFlow")
-                .start(toiletStep(jobRepository, transactionManager))
-                .next(welfareFacilityStep(jobRepository, transactionManager))
-                .next(chargerStep(jobRepository, transactionManager))
-                .next(parkingLotStep(jobRepository, transactionManager))
+                .split(taskExecutor)
+                .add(
+                        tolietFlow(jobRepository, transactionManager),
+                        welfareFacilityFlow(jobRepository, transactionManager),
+                        chargerFlow(jobRepository, transactionManager),
+                        parkingLotFlow(jobRepository, transactionManager)
+                )
                 .build();
     }
 
@@ -67,9 +76,13 @@ public class JobConfig {
     @Bean
     public Flow stationDependentFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new FlowBuilder<SimpleFlow>("stationDependentFlow")
-                .split(taskExecutor())
-                .add(stationElevatorFlow(jobRepository, transactionManager), stationFacilityFlow(jobRepository, transactionManager))
-                .build();
+                .split(taskExecutor)
+                .add(stationElevatorFlow(jobRepository, transactionManager),
+                        stationChargerFlow(jobRepository, transactionManager),
+                        stationRampFlow(jobRepository, transactionManager),
+                        stationLiftFlow(jobRepository, transactionManager),
+                        stationToiletFlow(jobRepository, transactionManager)
+                ).build();
     }
 
     @Bean
@@ -80,12 +93,30 @@ public class JobConfig {
     }
 
     @Bean
-    public Flow stationFacilityFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new FlowBuilder<SimpleFlow>("stationFacilityFlow")
+    public Flow stationChargerFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationChargerFlow")
                 .start(stationChargerStep(jobRepository, transactionManager))
-                .next(stationRampStep(jobRepository, transactionManager))
-                .next(stationLiftStep(jobRepository, transactionManager))
-                .next(stationToiletStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow stationRampFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationRampFlow")
+                .start(stationRampStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow stationLiftFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationLiftFlow")
+                .start(stationLiftStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow stationToiletFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("stationToiletFlow")
+                .start(stationToiletStep(jobRepository, transactionManager))
                 .build();
     }
 
@@ -93,6 +124,34 @@ public class JobConfig {
     public Step stationStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("stationStep", jobRepository)
                 .tasklet(new StationTasklet(customStationRepository, tMapRequester), transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Flow tolietFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("toiletFlow")
+                .start(toiletStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow chargerFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("chargerFlow")
+                .start(chargerStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow parkingLotFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("parkingLotFlow")
+                .start(parkingLotStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Flow welfareFacilityFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new FlowBuilder<SimpleFlow>("welfareFacilityFlow")
+                .start(welfareFacilityStep(jobRepository, transactionManager))
                 .build();
     }
 
@@ -157,10 +216,5 @@ public class JobConfig {
         return new StepBuilder("stationToiletStep", jobRepository)
                 .tasklet(new StationToiletTasklet(stationRepository, facilityRepository), transactionManager)
                 .build();
-    }
-
-    @Bean
-    public TaskExecutor taskExecutor() {
-        return new SimpleAsyncTaskExecutor("batch_thread");
     }
 }

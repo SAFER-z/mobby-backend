@@ -5,15 +5,17 @@ import com.safer.safer.routing.dto.tmap.CoordinateResponse;
 import com.safer.safer.routing.dto.tmap.SearchDetailResult;
 import com.safer.safer.routing.dto.tmap.SearchResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,70 +24,70 @@ import static com.safer.safer.routing.dto.tmap.SearchResult.Place;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TMapRequester {
 
-    private static String appKey;
-    private final RestTemplate restTemplate;
-    private static final String BASE_URI = "https://apis.openapi.sk.com/";
+    private final WebClient webClient;
+    private static final String BASE_URL = "https://apis.openapi.sk.com/";
 
-    @Value("${appKey}")
-    private void setAppKey(String value) {
-        appKey = value;
-    }
 
     public List<Place> searchWithCoordinate(String keyword, double lat, double lon) {
         URI uri = createUri(keyword, lat, lon);
-        RequestEntity<Void> request = createRequest(uri);
 
-        ResponseEntity<SearchResult> response = restTemplate.exchange(
-                request,
-                SearchResult.class
-        );
+        Mono<SearchResult> responseMono = webClient.get()
+                .uri(uri)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response ->
+                        Mono.error(new TMapException(FAIL_TO_REQUEST_TMAP_API, keyword + response.statusCode())))
+                .onStatus(HttpStatusCode::is5xxServerError, response ->
+                        Mono.error(new TMapException(FAIL_TO_REQUEST_TMAP_API, keyword + response.statusCode())))
+                .bodyToMono(SearchResult.class);
 
-        if(!response.getStatusCode().is2xxSuccessful())
-            throw new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode() + " 검색어:"+keyword);
-
-        return Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode().toString()))
+        return Optional.ofNullable(responseMono.block())
+                .orElseThrow(() -> new TMapException(FAIL_TO_REQUEST_TMAP_API, keyword))
                 .getSearchPoiInfo().getPois().getPoi();
     }
 
-    public Point searchCoordinate(String keyword) {
-        URI uri = createUri(keyword);
-        RequestEntity<Void> request = createRequest(uri);
+    public Mono<Point> searchCoordinate(String keyword) {
+        return webClient.get()
+                .uri(createUri(keyword))
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is4xxClientError,
+                        response -> Mono.error(new TMapException(FAIL_TO_REQUEST_TMAP_API, keyword + " " + response.statusCode()))
+                )
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
+                        response -> Mono.error(new TMapException(FAIL_TO_REQUEST_TMAP_API, keyword + " " + response.statusCode()))
+                )
+                .bodyToMono(CoordinateResponse.class)
+                .map(CoordinateResponse::getCoordinate)
+                .retryWhen(Retry.backoff(10, Duration.ofSeconds(2))
+                        .filter(throwable -> throwable instanceof TMapException)
+                        .doBeforeRetry(retrySignal -> log.warn("{} 요청 실패 : 재시도 {}회", keyword, retrySignal.totalRetries())))
+                .doOnError(e -> log.warn("재시도가 실패했습니다."));
 
-        ResponseEntity<CoordinateResponse> response = restTemplate.exchange(
-                request,
-                CoordinateResponse.class
-        );
-
-        if(!response.getStatusCode().is2xxSuccessful())
-            throw new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode() + " 검색어:"+keyword);
-
-        return Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode().toString()))
-                .getCoordinate();
     }
 
     public SearchDetailResult searchPlace(String placeId) {
         URI uri = createUriForPlaceDetail(placeId);
-        RequestEntity<Void> request = createRequest(uri);
 
-        ResponseEntity<SearchDetailResult> response = restTemplate.exchange(
-                request,
-                SearchDetailResult.class
-        );
+        Mono<SearchDetailResult> responseMono = webClient.get()
+                .uri(uri)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response ->
+                        Mono.error(new TMapException(FAIL_TO_REQUEST_TMAP_API, placeId + response.statusCode())))
+                .onStatus(HttpStatusCode::is5xxServerError, response ->
+                        Mono.error(new TMapException(FAIL_TO_REQUEST_TMAP_API, placeId + response.statusCode())))
+                .bodyToMono(SearchDetailResult.class);
 
-        if(!response.getStatusCode().is2xxSuccessful())
-            throw new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode().toString());
-
-        return Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new TMapException(FAIL_TO_REQUEST_TMAP_API, response.getStatusCode().toString()));
+        return Optional.ofNullable(responseMono.block())
+                .orElseThrow(() -> new TMapException(FAIL_TO_REQUEST_TMAP_API, placeId));
     }
 
     private URI createUri(String keyword) {
         return UriComponentsBuilder
-                .fromUriString(BASE_URI)
+                .fromUriString(BASE_URL)
                 .path("tmap/pois")
                 .queryParam("searchKeyword", keyword)
                 .queryParam("count", 1)
@@ -96,7 +98,7 @@ public class TMapRequester {
 
     private URI createUri(String keyword, double lat, double lon) {
         return UriComponentsBuilder
-                .fromUriString(BASE_URI)
+                .fromUriString(BASE_URL)
                 .path("tmap/pois")
                 .queryParam("searchKeyword", keyword)
                 .queryParam("centerLat", lat)
@@ -110,17 +112,10 @@ public class TMapRequester {
 
     private URI createUriForPlaceDetail(String placeId) {
         return UriComponentsBuilder
-                .fromUriString(BASE_URI)
-                .path("/tmap/pois/" + placeId)
+                .fromUriString(BASE_URL)
+                .path("tmap/pois/" + placeId)
                 .encode()
                 .build()
                 .toUri();
-    }
-
-    private RequestEntity<Void> createRequest(URI uri) {
-        return RequestEntity
-                .get(uri)
-                .header("appKey", TMapRequester.appKey)
-                .build();
     }
 }
